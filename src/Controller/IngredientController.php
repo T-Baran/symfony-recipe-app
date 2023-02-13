@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\Json;
 
 #[Route('/api')]
 class IngredientController extends AbstractController
@@ -18,7 +19,7 @@ class IngredientController extends AbstractController
     {
     }
 
-    #[Route('/ingredient', name: 'ingredient_get', methods: 'GET')]
+    #[Route('/ingredients', name: 'ingredient_get', methods: 'GET')]
     public function index(IngredientRepository $ingredientRepository, SerializerInterface $serializer): JsonResponse
     {
         $ingredients = $ingredientRepository->findAll();
@@ -26,27 +27,27 @@ class IngredientController extends AbstractController
         return new JsonResponse($data, 200, [], true);
     }
 
-    #[Route('/ingredient', name: 'ingredient_post', methods: 'POST')]
+    #[Route('/ingredients', name: 'ingredient_post', methods: 'POST')]
     public function post(Request $request): JsonResponse
     {
         $ingredient = new Ingredient();
         return $this->manager->generateHandleForm($request, $ingredient);
     }
 
-    #[Route('/ingredient/{id}', name: 'ingredient_show', methods: 'GET')]
+    #[Route('/ingredients/{id}', name: 'ingredient_show', methods: 'GET')]
     public function show(Ingredient $ingredient, SerializerInterface $serializer): JsonResponse
     {
         $data = $serializer->serialize($ingredient, 'json');
         return new JsonResponse($data, 200, [], true);
     }
 
-    #[Route('/ingredient/{id}', name: 'ingredient_show', methods: ['PUT', 'PATCH'])]
-    public function update(Ingredient $ingredient, SerializerInterface $serializer, Request $request): JsonResponse
+    #[Route('/ingredients/{id}', name: 'ingredient_modify', methods: ['PUT', 'PATCH'])]
+    public function update(Ingredient $ingredient, Request $request): JsonResponse
     {
         return $this->manager->generateHandleForm($request, $ingredient);
     }
 
-    #[Route('/ingredient/{id}', name: 'ingredient_delete', methods: 'DELETE')]
+    #[Route('/ingredients/{id}', name: 'ingredient_delete', methods: 'DELETE')]
     public function delete(Ingredient $ingredient): JsonResponse
     {
         $this->manager->delete($ingredient, true);

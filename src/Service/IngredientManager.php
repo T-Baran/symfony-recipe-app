@@ -30,8 +30,8 @@ class IngredientManager
         if ($form->isSubmitted() && $form->isValid()) {
             $ingredient = $this->transferData($ingredientDTO, $ingredient);
             $this->save($ingredient, true);
-            $isPost = $request->getMethod() === "POST" ? "201" : "204";
-            return new JsonResponse(null, $isPost, ['location' => '/api/ingredient/' . $ingredient->getId()]);
+            $isPost = $request->getMethod() === 'POST' ? '201' : '204';
+            return new JsonResponse(null, $isPost, ['Location' => '/api/ingredients/' . $ingredient->getId()]);
         }
         return new JsonResponse($this->getErrorsFromForm($form), 400);
     }

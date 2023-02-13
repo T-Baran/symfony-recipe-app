@@ -17,9 +17,9 @@ class IngredientType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-//                'constraints' => [
-//                    new NotBlank()
-//                ]
+                'constraints' => [
+                    new NotBlank()
+                ]
             ])
             ->add('calories', NumberType::class)
             ->add('carbohydrates', NumberType::class)
