@@ -10,7 +10,7 @@ class IngredientControllerTest extends WebTestCase
 
     public function testControllerIndex(): void
     {
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient();
         $client->request('GET', '/api/ingredients');
         $response = $client->getResponse();
         $this->assertSame(200, $response->getStatusCode());
@@ -22,14 +22,13 @@ class IngredientControllerTest extends WebTestCase
 
     public function testControllerGet(): void
     {
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient();
         $client->request('GET', '/api/ingredients/3');
         $response = $client->getResponse();
         $this->assertSame(200, $response->getStatusCode());
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
         $responseData = json_decode($response->getContent(), true);
-        //data from last item from fixtures
         $this->assertArrayHasKey('id', $responseData);
         $this->assertArrayHasKey('name', $responseData);
         $this->assertArrayHasKey('calories', $responseData);
@@ -47,7 +46,7 @@ class IngredientControllerTest extends WebTestCase
 
     public function testControllerPost(): void
     {
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient();
         $container = $client->getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
@@ -72,9 +71,9 @@ class IngredientControllerTest extends WebTestCase
         $this->basicvalueTests($this->partialNotValidIngredientData(), $ingredientRecord);
     }
 
-    public function testControllerPut(): void
+    public function testControllerPutFullValid(): void
     {
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient();
         $container = $client->getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
@@ -84,6 +83,13 @@ class IngredientControllerTest extends WebTestCase
         $ingredientRecord = $entityManager->getRepository(Ingredient::class)->findOneBy(['id' => 3]);
         $this->basicValidtests(204, $response, $ingredientRecord);
         $this->basicvalueTests($this->fullIngredientData(), $ingredientRecord, 3);
+    }
+
+    public function testControllerPutPartialValid(): void
+    {
+        $client = $this->createAuthenticatedClient();
+        $container = $client->getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
 
         $content = json_encode($this->partialValidIngredientData());
         $client->request('PUT', '/api/ingredients/3', content: $content);
@@ -91,17 +97,21 @@ class IngredientControllerTest extends WebTestCase
         $ingredientRecord = $entityManager->getRepository(Ingredient::class)->findOneBy(['id' => 3]);
         $this->basicValidtests(204, $response, $ingredientRecord);
         $this->basicvalueTests($this->partialValidIngredientData(), $ingredientRecord, 3);
+    }
+
+    public function testControllerPutNotValid(): void
+    {
+        $client = $this->createAuthenticatedClient();
 
         $content = json_encode($this->partialNotValidIngredientData());
         $client->request('PUT', '/api/ingredients/3', content: $content);
         $response = $client->getResponse();
         $this->basicNotValidTests(400, $response);
-        $this->basicvalueTests($this->partialNotValidIngredientData(), $ingredientRecord, 3);
     }
 
-    public function testControllerPatch(): void
+    public function testControllerPatchFullValid(): void
     {
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient();
         $container = $client->getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
@@ -111,6 +121,13 @@ class IngredientControllerTest extends WebTestCase
         $ingredientRecord = $entityManager->getRepository(Ingredient::class)->findOneBy(['id' => 3]);
         $this->basicValidtests(204, $response, $ingredientRecord);
         $this->basicvalueTests($this->fullIngredientData(), $ingredientRecord, 3);
+    }
+
+    public function testControllerPatchPartialValid(): void
+    {
+        $client = $this->createAuthenticatedClient();
+        $container = $client->getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
 
         $content = json_encode($this->partialValidIngredientData());
         $client->request('PATCH', '/api/ingredients/3', content: $content);
@@ -118,6 +135,13 @@ class IngredientControllerTest extends WebTestCase
         $ingredientRecord = $entityManager->getRepository(Ingredient::class)->findOneBy(['id' => 3]);
         $this->basicValidtests(204, $response, $ingredientRecord);
         $this->basicvalueTests($this->partialValidIngredientData(), $ingredientRecord, 3);
+    }
+
+    public function testControllerPatchNotValid(): void
+    {
+        $client = $this->createAuthenticatedClient();
+        $container = $client->getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
 
         $content = json_encode($this->partialNotValidIngredientData());
         $client->request('PATCH', '/api/ingredients/3', content: $content);
@@ -129,7 +153,7 @@ class IngredientControllerTest extends WebTestCase
 
     public function testControllerDelete(): void
     {
-        $client = static::createClient();
+        $client = $this->createAuthenticatedClient();
         $container = $client->getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
@@ -147,9 +171,9 @@ class IngredientControllerTest extends WebTestCase
         return [
             'name' => 'full',
             'calories' => 111,
-            'carbohydrates' => 222,
-            'fiber' => 333,
-            'protein' => 444
+            'carbohydrates' => 22,
+            'fiber' => 33,
+            'protein' => 44
         ];
     }
 
@@ -158,7 +182,7 @@ class IngredientControllerTest extends WebTestCase
         return [
             'name' => 'partialValid',
             'calories' => 111,
-            'carbohydrates' => 222
+            'carbohydrates' => 22
         ];
     }
 
@@ -166,7 +190,7 @@ class IngredientControllerTest extends WebTestCase
     {
         return [
             'calories' => 111,
-            'carbohydrates' => 222
+            'carbohydrates' => 22
         ];
     }
 
@@ -210,5 +234,27 @@ class IngredientControllerTest extends WebTestCase
         if (array_key_exists('fiber', $inputArray)) {
             $this->assertEquals($inputArray['fiber'], $ingredientRecord->getFiber());
         }
+    }
+
+    protected function createAuthenticatedClient($email = 'email@email.com', $password = 'password')
+    {
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/api/login_check',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'email' => $email,
+                'password' => $password,
+            ])
+        );
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $data['token']));
+
+        return $client;
     }
 }

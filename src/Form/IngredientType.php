@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
+use Symfony\Component\Validator\Constraints\Range;
 
 class IngredientType extends AbstractType
 {
@@ -21,10 +23,26 @@ class IngredientType extends AbstractType
                     new NotBlank()
                 ]
             ])
-            ->add('calories', NumberType::class)
-            ->add('carbohydrates', NumberType::class)
-            ->add('fiber', NumberType::class)
-            ->add('protein', NumberType::class);
+            ->add('calories', NumberType::class,[
+                'constraints'=> [
+                    new PositiveOrZero()
+                ]
+            ])
+            ->add('carbohydrates', NumberType::class,[
+                'constraints'=> [
+                    new Range(['min'=>0, 'max'=>100])
+                    ]
+                ])
+            ->add('fiber', NumberType::class,[
+                'constraints'=> [
+                    new Range(['min'=>0, 'max'=>100])
+                ]
+            ])
+            ->add('protein', NumberType::class,[
+                'constraints'=> [
+                    new Range(['min'=>0, 'max'=>100])
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

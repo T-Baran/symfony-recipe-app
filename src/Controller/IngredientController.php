@@ -2,57 +2,73 @@
 
 namespace App\Controller;
 
+use App\DTO\IngredientDTO;
 use App\Entity\Ingredient;
+use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
-use App\Service\IngredientManager;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\ErrorManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Constraints\Json;
 
 #[Route('/api')]
-class IngredientController extends AbstractController
+class IngredientController extends ApiController
 {
-    public function __construct(private IngredientManager $manager)
+    public function __construct(private IngredientRepository $ingredientRepository, private ErrorManager $errorManager)
     {
     }
 
     #[Route('/ingredients', name: 'ingredient_get', methods: 'GET')]
-    public function index(IngredientRepository $ingredientRepository, SerializerInterface $serializer): JsonResponse
+    public function index(SerializerInterface $serializer): JsonResponse
     {
-        $ingredients = $ingredientRepository->findAll();
+        $ingredients = $this->ingredientRepository->findAll();
         $data = $serializer->serialize($ingredients, 'json');
-        return new JsonResponse($data, 200, [], true);
+        return $this->response($data, [], true);
     }
 
     #[Route('/ingredients', name: 'ingredient_post', methods: 'POST')]
     public function post(Request $request): JsonResponse
     {
         $ingredient = new Ingredient();
-        return $this->manager->generateHandleForm($request, $ingredient);
+        return $this->handleForm($request, $ingredient);
     }
 
     #[Route('/ingredients/{id}', name: 'ingredient_show', methods: 'GET')]
     public function show(Ingredient $ingredient, SerializerInterface $serializer): JsonResponse
     {
         $data = $serializer->serialize($ingredient, 'json');
-        return new JsonResponse($data, 200, [], true);
+        return $this->response($data, [], true);
     }
 
     #[Route('/ingredients/{id}', name: 'ingredient_modify', methods: ['PUT', 'PATCH'])]
     public function update(Ingredient $ingredient, Request $request): JsonResponse
     {
-        return $this->manager->generateHandleForm($request, $ingredient);
+        return $this->handleForm($request, $ingredient);
     }
 
     #[Route('/ingredients/{id}', name: 'ingredient_delete', methods: 'DELETE')]
     public function delete(Ingredient $ingredient): JsonResponse
     {
-        $this->manager->delete($ingredient, true);
-        return new JsonResponse(null, 204);
+        $this->ingredientRepository->remove($ingredient, true);
+        return $this->respondNoContent();
     }
 
-
+    public function handleForm(Request $request, Ingredient $ingredient):JsonResponse
+    {
+        $data = $this->returnTransformedData($request);
+        $clearMissing = $request->getMethod() !== 'PATCH';
+        $ingredientDTO = new IngredientDTO($ingredient);
+        $form = $this->createForm(IngredientType::class, $ingredientDTO);
+        $form->submit($data, $clearMissing);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $ingredientDTO->transferTo($ingredient);
+            $this->ingredientRepository->save($ingredient, true);
+            $isPost = $request->getMethod() === 'POST' ? '201' : '204';
+            $this->setStatusCode($isPost);
+            return $this->response(null, ['Location' => '/api/ingredients/' . $ingredient->getId()]);
+        }
+        $this->setStatusCode(400);
+        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form),[]);
+    }
 }
