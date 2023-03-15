@@ -42,13 +42,22 @@ class IngredientType extends AbstractType
                 'constraints'=> [
                     new Range(['min'=>0, 'max'=>100])
                 ]
+            ])
+            ->add('id', NumberType::class,[
+                'constraints'=> [
+                    new PositiveOrZero()
+                ]
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => IngredientDTO::class,
+            'empty_data' => function(){
+                return new IngredientDTO(new Ingredient());
+            },
             'csrf_protection' => false,
         ]);
     }

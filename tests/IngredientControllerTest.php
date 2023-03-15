@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class IngredientControllerTest extends WebTestCase
 {
-
     public function testControllerIndex(): void
     {
         $client = $this->createAuthenticatedClient();

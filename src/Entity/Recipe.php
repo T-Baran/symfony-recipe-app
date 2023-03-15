@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\IngredientRepository;
+use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: IngredientRepository::class)]
-class Ingredient
+#[ORM\Entity(repositoryClass: RecipeRepository::class)]
+class Recipe
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,27 +17,22 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $calories = null;
+    private ?int $preparationTime = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $carbohydrates = null;
+    private ?int $servings = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $fiber = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $protein = null;
-
-    #[ORM\ManyToOne(inversedBy: 'ingredients')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(inversedBy: 'recipes')]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'ingredient', targetEntity: RecipeIngredient::class)]
+    #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RecipeIngredient::class, orphanRemoval: true)]
     private Collection $recipeIngredients;
+
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private array $instructions = [];
 
     public function __construct()
     {
@@ -61,60 +56,36 @@ class Ingredient
         return $this;
     }
 
-    public function getCalories(): ?int
+    public function getPreparationTime(): ?int
     {
-        return $this->calories;
+        return $this->preparationTime;
     }
 
-    public function setCalories(?int $calories): self
+    public function setPreparationTime(?int $preparationTime): self
     {
-        $this->calories = $calories;
+        $this->preparationTime = $preparationTime;
 
         return $this;
     }
 
-    public function getCarbohydrates(): ?int
+    public function getServings(): ?int
     {
-        return $this->carbohydrates;
+        return $this->servings;
     }
 
-    public function setCarbohydrates(?int $carbohydrates): self
+    public function setServings(?int $servings): self
     {
-        $this->carbohydrates = $carbohydrates;
+        $this->servings = $servings;
 
         return $this;
     }
 
-    public function getFiber(): ?int
-    {
-        return $this->fiber;
-    }
-
-    public function setFiber(?int $fiber): self
-    {
-        $this->fiber = $fiber;
-
-        return $this;
-    }
-
-    public function getProtein(): ?int
-    {
-        return $this->protein;
-    }
-
-    public function setProtein(?int $protein): self
-    {
-        $this->protein = $protein;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
+    public function getUser(): ?user
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?user $user): self
     {
         $this->user = $user;
 
@@ -133,7 +104,7 @@ class Ingredient
     {
         if (!$this->recipeIngredients->contains($recipeIngredient)) {
             $this->recipeIngredients->add($recipeIngredient);
-            $recipeIngredient->setIngredient($this);
+            $recipeIngredient->setRecipe($this);
         }
 
         return $this;
@@ -143,10 +114,22 @@ class Ingredient
     {
         if ($this->recipeIngredients->removeElement($recipeIngredient)) {
             // set the owning side to null (unless already changed)
-            if ($recipeIngredient->getIngredient() === $this) {
-                $recipeIngredient->setIngredient(null);
+            if ($recipeIngredient->getRecipe() === $this) {
+                $recipeIngredient->setRecipe(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getInstructions(): array
+    {
+        return $this->instructions;
+    }
+
+    public function setInstructions(?array $instructions): self
+    {
+        $this->instructions = $instructions;
 
         return $this;
     }

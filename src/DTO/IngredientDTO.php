@@ -11,6 +11,8 @@ class IngredientDTO
     #[Assert\NotBlank]
     private ?string $name = null;
 
+    private ?int $id = null;
+
     private ?int $calories = null;
 
     private ?int $carbohydrates = null;
@@ -19,6 +21,8 @@ class IngredientDTO
 
     private ?int $protein = null;
 
+
+
     public function __construct(Ingredient $ingredient)
     {
         $this->setName($ingredient->getName());
@@ -26,11 +30,16 @@ class IngredientDTO
         $this->setCarbohydrates($ingredient->getCarbohydrates());
         $this->setFiber($ingredient->getFiber());
         $this->setProtein($ingredient->getProtein());
-//        $this->name = $ingredient->getName();
-//        $this->calories = $ingredient->getCalories();
-//        $this->carbohydrates = $ingredient->getCarbohydrates();
-//        $this->fiber = $ingredient->getFiber();
-//        $this->protein = $ingredient->getProtein();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getName(): ?string
