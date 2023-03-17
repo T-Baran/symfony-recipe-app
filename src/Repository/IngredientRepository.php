@@ -37,7 +37,7 @@ class IngredientRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByNameAndResults(string $value, int $results = 10): array
+    public function findByNameAndLimit(string $value, int $results): array
     {
         return $this->createQueryBuilder('i')
             ->andWhere('i.name LIKE :val')
@@ -49,13 +49,15 @@ class IngredientRepository extends ServiceEntityRepository
         ;
     }
 
-//    public function findOneBySomeField($value): ?Ingredient
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findOneByIdAndName(int $id, string $name): ?Ingredient
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.id = :id')
+            ->setParameter('id', $id)
+            ->andWhere('i.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

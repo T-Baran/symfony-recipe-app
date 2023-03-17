@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/recipes')]
 class RecipeController extends ApiController
 {
-    public function __construct(private RecipeRepository $recipeRepository, private ErrorManager $errorManager, private IngredientRepository $ingredientRepository,private RecipeManager $recipeManager)
+    public function __construct(private RecipeRepository $recipeRepository, private ErrorManager $errorManager, private IngredientRepository $ingredientRepository, private RecipeManager $recipeManager)
     {
     }
 
@@ -25,7 +25,8 @@ class RecipeController extends ApiController
     public function index(SerializerInterface $serializer): JsonResponse
     {
         $recipes = $this->recipeRepository->findAll();
-        $data = $serializer->serialize($recipes, 'json');
+        $data = $serializer->serialize($recipes, 'json',
+            ['groups' => ['recipe']]);
         return $this->response($data, [], true);
     }
 
@@ -36,6 +37,27 @@ class RecipeController extends ApiController
         return $this->handleForm($request, $recipe);
     }
 
+    #[Route('/{id}', name: 'recipe_show', methods: 'GET')]
+    public function show(Recipe $recipe, SerializerInterface $serializer): JsonResponse
+    {
+        $data = $serializer->serialize($recipe, 'json',
+            ['groups' => ['recipe', 'recipe_detail']]);
+        return $this->response($data, [], true);
+    }
+
+    #[Route('/{id}', name: 'recipe_modify', methods: ['PUT', 'PATCH'])]
+    public function update(Recipe $recipe, Request $request): JsonResponse
+    {
+        return $this->handleForm($request, $recipe);
+    }
+
+    #[Route('/{id}', name: 'recipe_delete', methods: 'DELETE')]
+    public function delete(Recipe $recipe):JsonResponse
+    {
+        $this->recipeRepository->remove($recipe, true);
+        return $this->respondNoContent();
+    }
+
     public function handleForm(Request $request, Recipe $recipe): JsonResponse
     {
         $data = $this->returnTransformedData($request);
@@ -44,11 +66,11 @@ class RecipeController extends ApiController
         $form = $this->createForm(RecipeType::class, $recipeDTO);
         $form->submit($data, $clearMissing);
         if ($form->isSubmitted() && $form->isValid()) {
-            $formData = $form->getData();
-            $this->recipeManager->manageRecipe($formData);
-            $isPost = $request->getMethod() === 'POST' ? '201' : '204';
-            $this->setStatusCode($isPost);
-            return $this->response(null, ['Location' => '/api/recipes/' . $recipe->getId()]);
+            $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
+            $this->recipeManager->manageRecipe($recipeDTO, $recipe);
+            $this->setStatusCode($statusCode);
+            $id = $this->recipeManager->getId();
+            return $this->response(null, ['Location' => '/api/recipes/' . $id]);
         }
         $this->setStatusCode(400);
         return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);

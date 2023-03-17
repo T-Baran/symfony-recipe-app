@@ -21,12 +21,12 @@ class IngredientController extends ApiController
 
     // Querystring params
     // search -> define searched word
-    // results -> define how many ingredients should be returned
+    // limit -> define how many ingredients should be returned
     #[Route('', name: 'ingredient_get', methods: 'GET')]
     public function index(Request $request, SerializerInterface $serializer): JsonResponse
     {
         if ($query = $request->query->all()) {
-            $ingredients = $this->ingredientRepository->findByNameAndResults($query['search'], $query['results']??10);
+            $ingredients = $this->ingredientRepository->findByNameAndLimit($query['search'], $query['limit']??10);
         } else {
             $ingredients = $this->ingredientRepository->findAll();
         }
@@ -72,8 +72,8 @@ class IngredientController extends ApiController
             $ingredientDTO->transferTo($ingredient);
             $ingredient->setUser($this->getUser());
             $this->ingredientRepository->saveWithFlush($ingredient);
-            $isPost = $request->getMethod() === 'POST' ? '201' : '204';
-            $this->setStatusCode($isPost);
+            $statusCode= $request->getMethod() === 'POST' ? '201' : '204';
+            $this->setStatusCode($statusCode);
             return $this->response(null, ['Location' => '/api/ingredients/' . $ingredient->getId()]);
         }
         $this->setStatusCode(400);
