@@ -54,13 +54,14 @@ class RecipeIngredientRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?RecipeIngredient
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function CheckIfIngredientCanBeDeleted($id): bool
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.ingredient = :val')
+            ->setParameter('val', $id)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()===null
+        ;
+    }
 }

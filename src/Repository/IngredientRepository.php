@@ -31,7 +31,6 @@ class IngredientRepository extends ServiceEntityRepository
     public function remove(Ingredient $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
-
         if ($flush) {
             $this->getEntityManager()->flush();
         }
@@ -46,18 +45,6 @@ class IngredientRepository extends ServiceEntityRepository
             ->setMaxResults($results)
             ->getQuery()
             ->getResult()
-        ;
-    }
-
-    public function findOneByIdAndName(int $id, string $name): ?Ingredient
-    {
-        return $this->createQueryBuilder('i')
-            ->andWhere('i.id = :id')
-            ->setParameter('id', $id)
-            ->andWhere('i.name = :name')
-            ->setParameter('name', $name)
-            ->getQuery()
-            ->getOneOrNullResult()
         ;
     }
 }

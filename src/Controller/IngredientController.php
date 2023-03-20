@@ -6,6 +6,7 @@ use App\DTO\IngredientDTO;
 use App\Entity\Ingredient;
 use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
+use App\Repository\RecipeIngredientRepository;
 use App\Service\ErrorManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/ingredients')]
 class IngredientController extends ApiController
 {
-    public function __construct(private IngredientRepository $ingredientRepository, private ErrorManager $errorManager)
+    public function __construct(private IngredientRepository $ingredientRepository, private ErrorManager $errorManager, private RecipeIngredientRepository $recipeIngredientRepository)
     {
     }
 
@@ -30,7 +31,8 @@ class IngredientController extends ApiController
         } else {
             $ingredients = $this->ingredientRepository->findAll();
         }
-            $data = $serializer->serialize($ingredients, 'json');
+            $data = $serializer->serialize($ingredients, 'json',
+                ['groups' => ['ingredient']]);
         return $this->response($data, [], true);
     }
 
@@ -44,7 +46,8 @@ class IngredientController extends ApiController
     #[Route('/{id}', name: 'ingredient_show', methods: 'GET')]
     public function show(Ingredient $ingredient, SerializerInterface $serializer): JsonResponse
     {
-        $data = $serializer->serialize($ingredient, 'json');
+        $data = $serializer->serialize($ingredient, 'json',
+            ['groups' => ['ingredient','ingredient_detail']]);
         return $this->response($data, [], true);
     }
 
@@ -57,6 +60,10 @@ class IngredientController extends ApiController
     #[Route('/{id}', name: 'ingredient_delete', methods: 'DELETE')]
     public function delete(Ingredient $ingredient): JsonResponse
     {
+        if(!$this->recipeIngredientRepository->checkIfIngredientCanBeDeleted($ingredient->getId())){
+            $this->setStatusCode(405);
+            return $this->respondWithErrors('Cannot delete if someone is using this ingredient');
+        }
         $this->ingredientRepository->remove($ingredient, true);
         return $this->respondNoContent();
     }

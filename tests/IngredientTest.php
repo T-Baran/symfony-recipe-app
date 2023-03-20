@@ -17,7 +17,7 @@ class IngredientTest extends KernelTestCase
             ->getManager();
     }
 
-    public function testingredient_can_be_created_in_the_database()
+    public function test_ingredient_can_be_created_in_the_database()
     {
         $ingredient = new Ingredient();
         $ingredient->setName('cebula');

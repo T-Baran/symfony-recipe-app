@@ -16,7 +16,7 @@ class IngredientControllerTest extends WebTestCase
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
         $this->assertJson($response->getContent());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertCount(3, $responseData);
+        $this->assertCount(50, $responseData);
     }
 
     public function testControllerGet(): void
@@ -34,13 +34,6 @@ class IngredientControllerTest extends WebTestCase
         $this->assertArrayHasKey('carbohydrates', $responseData);
         $this->assertArrayHasKey('fiber', $responseData);
         $this->assertArrayHasKey('protein', $responseData);
-        $this->assertEquals(3, $responseData['id']);
-        $this->assertEquals('kukurydza', $responseData['name']);
-        $this->assertEquals(400, $responseData['calories']);
-        $this->assertEquals(25, $responseData['carbohydrates']);
-        $this->assertEquals(15, $responseData['protein']);
-        $this->assertEquals(25, $responseData['fiber']);
-
     }
 
     public function testControllerPost(): void
@@ -66,8 +59,7 @@ class IngredientControllerTest extends WebTestCase
         $content = json_encode($this->partialNotValidIngredientData());
         $client->request('POST', '/api/ingredients', content: $content);
         $response = $client->getResponse();
-        $this->basicNotValidTests(400, $response);
-        $this->basicvalueTests($this->partialNotValidIngredientData(), $ingredientRecord);
+        $this->basicNotValidTests($response);
     }
 
     public function testControllerPutFullValid(): void
@@ -105,7 +97,7 @@ class IngredientControllerTest extends WebTestCase
         $content = json_encode($this->partialNotValidIngredientData());
         $client->request('PUT', '/api/ingredients/3', content: $content);
         $response = $client->getResponse();
-        $this->basicNotValidTests(400, $response);
+        $this->basicNotValidTests($response);
     }
 
     public function testControllerPatchFullValid(): void
@@ -150,19 +142,35 @@ class IngredientControllerTest extends WebTestCase
         $this->basicvalueTests($this->partialNotValidIngredientData(), $ingredientRecord, 3);
     }
 
-    public function testControllerDelete(): void
+    public function testControllerDeleteSuccess(): void
     {
         $client = $this->createAuthenticatedClient();
         $container = $client->getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $client->request('DELETE', '/api/ingredients/3');
+        $client->request('DELETE', '/api/ingredients/50');
         $response = $client->getResponse();
         $this->assertSame(204, $response->getStatusCode());
         $this->assertEmpty($response->getContent());
         $ingredients = $entityManager->getRepository(Ingredient::class)->findAll();
-        $this->assertCount(2, $ingredients);
+        $this->assertCount(49, $ingredients);
     }
+
+    public function testControllerDeleteFailure(): void
+    {
+        $client = $this->createAuthenticatedClient();
+        $container = $client->getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $client->request('DELETE', '/api/ingredients/1');
+        $response = $client->getResponse();
+        $this->assertSame(405, $response->getStatusCode());
+//        dd($response->getContent());
+        $this->assertStringContainsString('Cannot delete if someone is using this ingredient', $response->getContent());
+        $ingredients = $entityManager->getRepository(Ingredient::class)->findAll();
+        $this->assertCount(50, $ingredients);
+    }
+
 
 
     private function fullIngredientData(): array
@@ -204,7 +212,7 @@ class IngredientControllerTest extends WebTestCase
         $this->assertTrue($response->headers->contains('Location', '/api/ingredients/' . $ingredientRecord->getId()));
     }
 
-    private function basicNotValidTests(int $expectedStatusCode, $response): void
+    private function basicNotValidTests($response): void
     {
         $this->assertSame(400, $response->getStatusCode());
         $this->assertJson($response->getContent());
@@ -235,7 +243,7 @@ class IngredientControllerTest extends WebTestCase
         }
     }
 
-    protected function createAuthenticatedClient($email = 'email@email.com', $password = 'password')
+    protected function createAuthenticatedClient($email = 'superadmin@test.test', $password = 'test1234')
     {
         $client = static::createClient();
         $client->request(

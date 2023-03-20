@@ -15,32 +15,33 @@ class Ingredient
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['recipe'])]
+    #[Groups(['recipe','ingredient'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['recipe'])]
+    #[Groups(['recipe','ingredient'])]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['recipe_detail'])]
+    #[Groups(['recipe_detail','ingredient'])]
     private ?int $calories = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['recipe_detail'])]
+    #[Groups(['recipe_detail','ingredient'])]
     private ?int $carbohydrates = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['recipe_detail'])]
+    #[Groups(['recipe_detail','ingredient'])]
     private ?int $fiber = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['recipe_detail'])]
+    #[Groups(['recipe_detail','ingredient'])]
     private ?int $protein = null;
 
     #[ORM\ManyToOne(inversedBy: 'ingredients')]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['ingredient_detail'])]
     private ?User $user = null;
 
     #[ORM\OneToMany(mappedBy: 'ingredient', targetEntity: RecipeIngredient::class)]

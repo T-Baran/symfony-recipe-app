@@ -30,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('recipe')]
+    #[Groups(['recipe','ingredient_detail'])]
     private ?string $username = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Ingredient::class, orphanRemoval: true)]
@@ -38,6 +38,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Recipe::class)]
     private Collection $recipes;
+
+    private $plainPassword;
 
     public function __construct()
     {
@@ -157,9 +159,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Recipe>
-     */
     public function getRecipes(): Collection
     {
         return $this->recipes;
@@ -185,5 +184,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($plainPassword): void
+    {
+        $this->plainPassword = $plainPassword;
     }
 }
