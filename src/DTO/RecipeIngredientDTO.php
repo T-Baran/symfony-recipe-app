@@ -2,11 +2,8 @@
 
 namespace App\DTO;
 
-use App\Entity\Ingredient;
-use App\Entity\Recipe;
 use App\Entity\RecipeIngredient;
-use App\Repository\RecipeIngredientRepository;
-use Doctrine\ORM\Mapping as ORM;
+use App\Service\IngredientManager;
 
 class RecipeIngredientDTO
 {
@@ -62,9 +59,13 @@ class RecipeIngredientDTO
         $this->ingredient = $ingredient;
     }
 
-    public function transferTo(RecipeIngredient $recipeIngredient):void
+    public function transferTo(RecipeIngredient $recipeIngredient): void
     {
-        $recipeIngredient->setUnit($this->getUnit());
-        $recipeIngredient->setQuantity($this->getQuantity());
+        if (!is_null($unit = $this->getUnit())) {
+            $recipeIngredient->setUnit($unit);
+        }
+        if (!is_null($quantity = $this->getQuantity())) {
+            $recipeIngredient->setQuantity($quantity);
+        }
     }
 }

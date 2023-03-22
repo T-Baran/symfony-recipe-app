@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class IngredientDTO
 {
 
-    #[Assert\NotBlank]
     private ?string $name = null;
 
     private ?int $id = null;
@@ -23,14 +22,14 @@ class IngredientDTO
 
 
 
-    public function __construct(Ingredient $ingredient)
-    {
-        $this->setName($ingredient->getName());
-        $this->setCalories($ingredient->getCalories());
-        $this->setCarbohydrates($ingredient->getCarbohydrates());
-        $this->setFiber($ingredient->getFiber());
-        $this->setProtein($ingredient->getProtein());
-    }
+//    public function __construct(Ingredient $ingredient)
+//    {
+//        $this->setName($ingredient->getName());
+//        $this->setCalories($ingredient->getCalories());
+//        $this->setCarbohydrates($ingredient->getCarbohydrates());
+//        $this->setFiber($ingredient->getFiber());
+//        $this->setProtein($ingredient->getProtein());
+//    }
 
     public function getId(): ?int
     {
@@ -94,10 +93,20 @@ class IngredientDTO
 
     public function transferTo(Ingredient $ingredient)
     {
-        $ingredient->setName($this->getName());
-        $ingredient->setCalories($this->getCalories());
-        $ingredient->setCarbohydrates($this->getCarbohydrates());
-        $ingredient->setFiber($this->getFiber());
-        $ingredient->setProtein($this->getProtein());
+        if(!is_null($name = $this->getName())){
+            $ingredient->setName($name);
+        }
+        if(!is_null($calories = $this->getCalories())){
+            $ingredient->setCalories($calories);
+        }
+        if(!is_null($carbohydrates = $this->getCarbohydrates())){
+            $ingredient->setCarbohydrates($carbohydrates);
+        }
+        if(!is_null($fiber = $this->getFiber())){
+            $ingredient->setFiber($fiber);
+        }
+        if(!is_null($protein = $this->getProtein())){
+            $ingredient->setProtein($protein);
+        }
     }
 }

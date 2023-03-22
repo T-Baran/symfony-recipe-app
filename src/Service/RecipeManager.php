@@ -11,19 +11,16 @@ class RecipeManager
 {
     private int $id;
 
-    public function __construct(private RecipeRepository $recipeRepository, private Security $security, private RecipeIngredientManager $recipeIngredientManager, private IngredientManager $ingredientManager)
+    public function __construct(private RecipeRepository $recipeRepository, private Security $security, private RecipeIngredientManager $recipeIngredientManager, private IngredientManager $ingredientManager, private UserManager $userManager)
     {
     }
 
     public function manageRecipe(RecipeDTO $recipeDTO, Recipe $recipe): void
     {
         $recipeDTO->transferTo($recipe);
-        $recipe->setUser($this->security->getUser());
+        $this->userManager->setCurrentUser($recipe);
         foreach ($recipeDTO->getIngredients() as $recipeIngredientDTO) {
-            $recipeIngredient = $this->recipeIngredientManager->getPersistedRecipeIngredient($recipeIngredientDTO);
-            $recipeIngredientDTO->transferTo($recipeIngredient);
-            $ingredient = $this->ingredientManager->handleIngredient($recipeIngredientDTO->getIngredient());
-            $recipeIngredient->setIngredient($ingredient);
+            $recipeIngredient = $this->recipeIngredientManager->handleRecipeIngredient($recipeIngredientDTO);
             $recipeIngredient->setRecipe($recipe);
         }
         $this->recipeRepository->saveWithFlush($recipe);

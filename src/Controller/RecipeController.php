@@ -62,10 +62,10 @@ class RecipeController extends ApiController
     {
         $data = $this->returnTransformedData($request);
         $clearMissing = $request->getMethod() !== 'PATCH';
-        $recipeDTO = new RecipeDTO($recipe);
+        $recipeDTO = new RecipeDTO();
         $form = $this->createForm(RecipeType::class, $recipeDTO);
         $form->submit($data, $clearMissing);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isValid()) {
             $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
             $this->recipeManager->manageRecipe($recipeDTO, $recipe);
             $this->setStatusCode($statusCode);

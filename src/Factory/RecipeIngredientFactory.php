@@ -10,7 +10,7 @@ use Zenstruck\Foundry\RepositoryProxy;
 
 final class RecipeIngredientFactory extends ModelFactory
 {
-    private array $unitArray = ['g', 'ml', 'tbs', 'pcs'];
+    private array $unitArray = ['g', 'ml', 'tbs', 'tsp', 'cup', 'pcs', 'pinch'];
 
     public function __construct()
     {
@@ -20,16 +20,15 @@ final class RecipeIngredientFactory extends ModelFactory
     protected function getDefaults(): array
     {
         return [
-            'quantity' => self::faker()->numberBetween(0,500),
+            'quantity' => self::faker()->numberBetween(0, 500),
             'unit' => self::faker()->randomElement($this->unitArray)
         ];
     }
 
     protected function initialize(): self
     {
-        return $this
-            // ->afterInstantiate(function(RecipeIngredient $recipeIngredient): void {})
-        ;
+        return $this// ->afterInstantiate(function(RecipeIngredient $recipeIngredient): void {})
+            ;
     }
 
     protected static function getClass(): string

@@ -8,6 +8,7 @@ use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
 use App\Repository\RecipeIngredientRepository;
 use App\Service\ErrorManager;
+use App\Service\IngredientManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +17,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/ingredients')]
 class IngredientController extends ApiController
 {
-    public function __construct(private IngredientRepository $ingredientRepository, private ErrorManager $errorManager, private RecipeIngredientRepository $recipeIngredientRepository)
+    public function __construct(private IngredientRepository $ingredientRepository, private ErrorManager $errorManager, private RecipeIngredientRepository $recipeIngredientRepository, private IngredientManager $ingredientManager)
     {
     }
 
@@ -39,7 +40,7 @@ class IngredientController extends ApiController
     #[Route('', name: 'ingredient_post', methods: 'POST')]
     public function post(Request $request): JsonResponse
     {
-        $ingredient = new Ingredient();
+        $ingredient = null;
         return $this->handleForm($request, $ingredient);
     }
 
@@ -68,20 +69,18 @@ class IngredientController extends ApiController
         return $this->respondNoContent();
     }
 
-    public function handleForm(Request $request, Ingredient $ingredient): JsonResponse
+    public function handleForm(Request $request, ?Ingredient $ingredient): JsonResponse
     {
         $data = $this->returnTransformedData($request);
         $clearMissing = $request->getMethod() !== 'PATCH';
-        $ingredientDTO = new IngredientDTO($ingredient);
+        $ingredientDTO = new IngredientDTO();
         $form = $this->createForm(IngredientType::class, $ingredientDTO);
         $form->submit($data, $clearMissing);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $ingredientDTO->transferTo($ingredient);
-            $ingredient->setUser($this->getUser());
-            $this->ingredientRepository->saveWithFlush($ingredient);
+        if ($form->isValid()) {
+            $this->ingredientManager->handleIngredient($ingredientDTO, $ingredient);
             $statusCode= $request->getMethod() === 'POST' ? '201' : '204';
             $this->setStatusCode($statusCode);
-            return $this->response(null, ['Location' => '/api/ingredients/' . $ingredient->getId()]);
+            return $this->response(null, ['Location' => '/api/ingredients/' . $this->ingredientManager->getId()]);
         }
         $this->setStatusCode(400);
         return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);

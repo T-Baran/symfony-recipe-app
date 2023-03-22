@@ -16,14 +16,6 @@ class RecipeDTO
 
     private ?array $ingredients = [];
 
-    public function __construct(Recipe $recipe)
-    {
-        $this->setName($recipe->getName());
-        $this->setPreparationTime($recipe->getPreparationTime());
-        $this->setServings($recipe->getServings());
-        $this->setInstructions($recipe->getInstructions());
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -86,10 +78,18 @@ class RecipeDTO
 
     public function transferTo(Recipe $recipe):Recipe
     {
-        $recipe->setName($this->getName());
-        $recipe->setPreparationTime($this->getPreparationTime());
-        $recipe->setServings($this->getServings());
-        $recipe->setInstructions($this->getInstructions());
+        if(!is_null($name = $this->getName())){
+            $recipe->setName($name);
+        }
+        if(!is_null($preparationTime = $this->getPreparationTime())){
+            $recipe->setPreparationTime($preparationTime);
+        }
+        if(!is_null($servings = $this->getServings())){
+            $recipe->setServings($servings);
+        }
+        if(!is_null($instructions = $this->getInstructions())){
+            $recipe->setInstructions($instructions);
+        }
         return $recipe;
     }
 }
