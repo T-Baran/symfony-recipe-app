@@ -5,26 +5,44 @@ namespace App\Service;
 
 use App\DTO\IngredientDTO;
 use App\Entity\Ingredient;
+use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
-use Symfony\Bundle\SecurityBundle\Security;
 
-class IngredientManager
+class IngredientManager implements FormHandlerInterface
 {
-    private ?int $id;
+    private int $id;
 
-    public function __construct(private IngredientRepository $ingredientRepository, private Security $security)
+    public function __construct(private IngredientRepository $ingredientRepository, private UserManager $userManager)
     {
     }
 
-    public function handleIngredient(IngredientDTO $ingredientDTO, ?Ingredient $ingredient = null)
+    public const FormType = IngredientType::class;
+
+    public function createDTO(): IngredientDTO
     {
-        if (is_null($ingredient)) {
+        return new IngredientDTO();
+    }
+
+    public function saveRecord($ingredientDTO, $id = null): Ingredient
+    {
+        if (is_null($id)) {
             $ingredient = $this->createIngredient($ingredientDTO);
         } else {
+            $ingredient = $this->ingredientRepository->find($id);
             $ingredientDTO->transferTo($ingredient);
         }
+        return $ingredient;
+    }
+
+    public function flushRecord($ingredient)
+    {
         $this->ingredientRepository->onlyFlush();
         $this->setId($ingredient->getId());
+    }
+
+    public function getLocation(): string
+    {
+        return '/api/ingredients/' . $this->getId();
     }
 
     public function handleIngredientWithId(IngredientDTO $ingredientDTO): Ingredient
@@ -40,7 +58,7 @@ class IngredientManager
     {
         $ingredient = new Ingredient();
         $ingredientDTO->transferTo($ingredient);
-        $ingredient->setUser($this->security->getUser());
+        $this->userManager->setCurrentUser($ingredient);
         $this->ingredientRepository->save($ingredient);
         return $ingredient;
     }

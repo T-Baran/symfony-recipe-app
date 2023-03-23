@@ -17,8 +17,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/recipes')]
 class RecipeController extends ApiController
 {
-    public function __construct(private RecipeRepository $recipeRepository, private ErrorManager $errorManager, private IngredientRepository $ingredientRepository, private RecipeManager $recipeManager)
+    public function __construct(private RecipeRepository $recipeRepository, private RecipeManager $recipeManager, private ErrorManager $errorManager)
     {
+        parent::__construct($this->errorManager);
     }
 
     #[Route('', name: 'recipe_get', methods: 'GET')]
@@ -33,8 +34,7 @@ class RecipeController extends ApiController
     #[Route('', name: 'recipe_post', methods: 'POST')]
     public function post(Request $request): JsonResponse
     {
-        $recipe = new Recipe();
-        return $this->handleForm($request, $recipe);
+        return $this->handleForm($request, $this->recipeManager);
     }
 
     #[Route('/{id}', name: 'recipe_show', methods: 'GET')]
@@ -46,9 +46,9 @@ class RecipeController extends ApiController
     }
 
     #[Route('/{id}', name: 'recipe_modify', methods: ['PUT', 'PATCH'])]
-    public function update(Recipe $recipe, Request $request): JsonResponse
+    public function update(Request $request): JsonResponse
     {
-        return $this->handleForm($request, $recipe);
+        return $this->handleForm($request, $this->recipeManager);
     }
 
     #[Route('/{id}', name: 'recipe_delete', methods: 'DELETE')]
@@ -56,23 +56,5 @@ class RecipeController extends ApiController
     {
         $this->recipeRepository->remove($recipe, true);
         return $this->respondNoContent();
-    }
-
-    public function handleForm(Request $request, Recipe $recipe): JsonResponse
-    {
-        $data = $this->returnTransformedData($request);
-        $clearMissing = $request->getMethod() !== 'PATCH';
-        $recipeDTO = new RecipeDTO();
-        $form = $this->createForm(RecipeType::class, $recipeDTO);
-        $form->submit($data, $clearMissing);
-        if ($form->isValid()) {
-            $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
-            $this->recipeManager->manageRecipe($recipeDTO, $recipe);
-            $this->setStatusCode($statusCode);
-            $id = $this->recipeManager->getId();
-            return $this->response(null, ['Location' => '/api/recipes/' . $id]);
-        }
-        $this->setStatusCode(400);
-        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);
     }
 }

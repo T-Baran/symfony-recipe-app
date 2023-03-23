@@ -17,8 +17,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/ingredients')]
 class IngredientController extends ApiController
 {
-    public function __construct(private IngredientRepository $ingredientRepository, private ErrorManager $errorManager, private RecipeIngredientRepository $recipeIngredientRepository, private IngredientManager $ingredientManager)
+    public function __construct(private IngredientRepository $ingredientRepository, private RecipeIngredientRepository $recipeIngredientRepository, private IngredientManager $ingredientManager, private ErrorManager $errorManager)
     {
+        parent::__construct($this->errorManager);
     }
 
     // Querystring params
@@ -40,8 +41,7 @@ class IngredientController extends ApiController
     #[Route('', name: 'ingredient_post', methods: 'POST')]
     public function post(Request $request): JsonResponse
     {
-        $ingredient = null;
-        return $this->handleForm($request, $ingredient);
+        return $this->handleForm($request, $this->ingredientManager);
     }
 
     #[Route('/{id}', name: 'ingredient_show', methods: 'GET')]
@@ -53,9 +53,9 @@ class IngredientController extends ApiController
     }
 
     #[Route('/{id}', name: 'ingredient_modify', methods: ['PUT', 'PATCH'])]
-    public function update(Ingredient $ingredient, Request $request): JsonResponse
+    public function update(Request $request): JsonResponse
     {
-        return $this->handleForm($request, $ingredient);
+        return $this->handleForm($request, $this->ingredientManager);
     }
 
     #[Route('/{id}', name: 'ingredient_delete', methods: 'DELETE')]
@@ -67,22 +67,5 @@ class IngredientController extends ApiController
         }
         $this->ingredientRepository->remove($ingredient, true);
         return $this->respondNoContent();
-    }
-
-    public function handleForm(Request $request, ?Ingredient $ingredient): JsonResponse
-    {
-        $data = $this->returnTransformedData($request);
-        $clearMissing = $request->getMethod() !== 'PATCH';
-        $ingredientDTO = new IngredientDTO();
-        $form = $this->createForm(IngredientType::class, $ingredientDTO);
-        $form->submit($data, $clearMissing);
-        if ($form->isValid()) {
-            $this->ingredientManager->handleIngredient($ingredientDTO, $ingredient);
-            $statusCode= $request->getMethod() === 'POST' ? '201' : '204';
-            $this->setStatusCode($statusCode);
-            return $this->response(null, ['Location' => '/api/ingredients/' . $this->ingredientManager->getId()]);
-        }
-        $this->setStatusCode(400);
-        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);
     }
 }

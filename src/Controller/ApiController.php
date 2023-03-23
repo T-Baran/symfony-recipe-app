@@ -2,13 +2,20 @@
 
 namespace App\Controller;
 
+use App\Service\ErrorManager;
+use App\Service\FormHandlerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class ApiController extends AbstractController
 {
+
     protected int $statusCode = 200;
+
+    public function __construct(private ErrorManager $errorManager)
+    {
+    }
 
     public function getStatusCode(): int
     {
@@ -75,6 +82,25 @@ class ApiController extends AbstractController
     {
         $body = $request->getContent();
         return json_decode($body, true);
+    }
+
+    public function handleForm(Request $request, FormHandlerInterface $manager): JsonResponse
+    {
+        $data = $this->returnTransformedData($request);
+        $clearMissing = $request->getMethod() !== 'PATCH';
+        $ingredientDTO = $manager->createDTO();
+        $form = $this->createForm($manager::FormType, $ingredientDTO);
+        $form->submit($data, $clearMissing);
+        if ($form->isValid()) {
+            $recordId = $request->get('id');
+            $object = $manager->saveRecord($ingredientDTO, $recordId);
+            $manager->flushRecord($object);
+            $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
+            $this->setStatusCode($statusCode);
+            return $this->response(null, ['Location' => $manager->getLocation()]);
+        }
+        $this->setStatusCode(400);
+        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);
     }
 
 }

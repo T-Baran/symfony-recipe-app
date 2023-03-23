@@ -4,27 +4,57 @@ namespace App\Service;
 
 use App\DTO\RecipeDTO;
 use App\Entity\Recipe;
+use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
-use Symfony\Bundle\SecurityBundle\Security;
 
-class RecipeManager
+class RecipeManager implements FormHandlerInterface
 {
     private int $id;
 
-    public function __construct(private RecipeRepository $recipeRepository, private Security $security, private RecipeIngredientManager $recipeIngredientManager, private IngredientManager $ingredientManager, private UserManager $userManager)
+    public function __construct(private RecipeRepository $recipeRepository, private RecipeIngredientManager $recipeIngredientManager, private UserManager $userManager)
     {
     }
 
-    public function manageRecipe(RecipeDTO $recipeDTO, Recipe $recipe): void
+    public const FormType = RecipeType::class;
+
+    public function createDTO(): RecipeDTO
     {
-        $recipeDTO->transferTo($recipe);
-        $this->userManager->setCurrentUser($recipe);
+        return new RecipeDTO();
+    }
+
+    public function saveRecord($recipeDTO, $id): Recipe
+    {
+        if (is_null($id)) {
+            $recipe = $this->createRecipe($recipeDTO);
+        } else {
+            $recipe = $this->recipeRepository->find($id);
+            $recipeDTO->transferTo($recipe);
+        }
         foreach ($recipeDTO->getIngredients() as $recipeIngredientDTO) {
-            $recipeIngredient = $this->recipeIngredientManager->handleRecipeIngredient($recipeIngredientDTO);
+            $recipeIngredient = $this->recipeIngredientManager->saveRecord($recipeIngredientDTO);
             $recipeIngredient->setRecipe($recipe);
         }
+        return $recipe;
+    }
+
+    public function flushRecord($recipe)
+    {
         $this->recipeRepository->saveWithFlush($recipe);
         $this->setId($recipe->getId());
+    }
+
+    public function getLocation(): string
+    {
+        return '/api/recipes/' . $this->getId();
+    }
+
+    private function createRecipe(RecipeDTO $recipeDTO): Recipe
+    {
+        $recipe = new Recipe();
+        $recipeDTO->transferTo($recipe);
+        $this->userManager->setCurrentUser($recipe);
+        $this->recipeRepository->save($recipe);
+        return $recipe;
     }
 
     public function getId(): int
@@ -36,6 +66,4 @@ class RecipeManager
     {
         $this->id = $id;
     }
-
-
 }

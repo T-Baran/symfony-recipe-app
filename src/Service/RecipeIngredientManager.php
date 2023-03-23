@@ -13,22 +13,38 @@ class RecipeIngredientManager
     {
     }
 
-    public function handleRecipeIngredient(RecipeIngredientDTO $recipeIngredientDTO):RecipeIngredient
+    public function saveRecord(RecipeIngredientDTO $recipeIngredientDTO): RecipeIngredient
     {
-        $recipeIngredient = $this->returnPersistedRecipeIngredient($recipeIngredientDTO);
-        $recipeIngredientDTO->transferTo($recipeIngredient);
-        $ingredient = $this->ingredientManager->handleIngredientWithId($recipeIngredientDTO->getIngredient());
+        if (is_null($id = $recipeIngredientDTO->getId())) {
+            $recipeIngredient = $this->createRecipeIngredient($recipeIngredientDTO);
+        } else {
+            $recipeIngredient = $this->recipeIngredientRepository->find($id);
+            if(is_null($recipeIngredient)){
+                throw new NotFoundHttpException('The RecipeIngredient with ID ' . $id . ' was not found');
+            }
+            $recipeIngredientDTO->transferTo($recipeIngredient);
+        }
+        $ingredientId = $recipeIngredientDTO->getIngredient()->getId();
+        $ingredient = $this->ingredientManager->saveRecord($recipeIngredientDTO->getIngredient(),$ingredientId);
         $recipeIngredient->setIngredient($ingredient);
         return $recipeIngredient;
     }
 
-    private function returnPersistedRecipeIngredient(RecipeIngredientDTO $recipeIngredientDTO):RecipeIngredient
+    private function createRecipeIngredient(RecipeIngredientDTO $recipeIngredientDTO): RecipeIngredient
     {
-        if(!$id = $recipeIngredientDTO->getId()){
+        $recipeIngredient = new RecipeIngredient();
+        $recipeIngredientDTO->transferTo($recipeIngredient);
+        $this->recipeIngredientRepository->save($recipeIngredient);
+        return $recipeIngredient;
+    }
+
+    private function returnPersistedRecipeIngredient(RecipeIngredientDTO $recipeIngredientDTO): RecipeIngredient
+    {
+        if (!$id = $recipeIngredientDTO->getId()) {
             $recipeIngredient = new RecipeIngredient();
             $this->recipeIngredientRepository->save($recipeIngredient);
-        }else if(!$recipeIngredient = $this->recipeIngredientRepository->find($id)){
-            throw new NotFoundHttpException('The RecipeIngredient with ID ' .$id.' was not found');
+        } else if (!$recipeIngredient = $this->recipeIngredientRepository->find($id)) {
+            throw new NotFoundHttpException('The RecipeIngredient with ID ' . $id . ' was not found');
         }
         return $recipeIngredient;
     }

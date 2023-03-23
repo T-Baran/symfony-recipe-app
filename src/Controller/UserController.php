@@ -25,30 +25,35 @@ class UserController extends ApiController
         return $this->handleForm($request);
     }
 
-
-
-    #[Route('/{id}', name: 'user_register', methods: ['PUT', 'PATCH'])]
+    #[Route('/{id}', name: 'user_modify', methods: ['PUT', 'PATCH'])]
     public function modify(User $user, Request $request): JsonResponse
     {
         return $this->handleForm($request, $user);
     }
 
-    private function handleForm(Request $request, ?User $user = null): JsonResponse
+    #[Route('/{id}', name: 'user_delete', methods: ['DELETE'])]
+    public function delete(User $user): JsonResponse
     {
-        $data = $this->returnTransformedData($request);
-        $clearMissing = $request->getMethod() !== 'PATCH';
-        $userDTO = new UserDTO();
-        $form = $this->createForm(UserType::class, $userDTO);
-        $form->submit($data, $clearMissing);
-        if ($form->isValid()) {
-            $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
-            $this->userManager->handleUser($userDTO, $user);
-            $this->setStatusCode($statusCode);
-            return $this->response(sprintf('User %s successfully %s', $this->userManager->getUsername(),
-                $statusCode === '201' ? 'created' : 'modified'
-            ));
-        }
-        $this->setStatusCode(400);
-        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);
+        $this->userRepository->remove($user, true);
+        return $this->respondNoContent();
     }
+
+//    private function handleForm(Request $request, ?User $user = null): JsonResponse
+//    {
+//        $data = $this->returnTransformedData($request);
+//        $clearMissing = $request->getMethod() !== 'PATCH';
+//        $userDTO = new UserDTO();
+//        $form = $this->createForm(UserType::class, $userDTO);
+//        $form->submit($data, $clearMissing);
+//        if ($form->isValid()) {
+//            $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
+//            $this->userManager->handleUser($userDTO, $user);
+//            $this->setStatusCode($statusCode);
+//            return $this->response(sprintf('User %s successfully %s', $this->userManager->getUsername(),
+//                $statusCode === '201' ? 'created' : 'modified'
+//            ));
+//        }
+//        $this->setStatusCode(400);
+//        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);
+//    }
 }

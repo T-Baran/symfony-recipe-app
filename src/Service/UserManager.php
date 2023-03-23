@@ -31,7 +31,6 @@ class UserManager
             $user = $this->createNewAndPersist();
         }
         $userDTO->transferTo($user);
-        dd($userDTO);
         if($plainPassword = $userDTO->getPlainPassword()){
             $user->setPassword($this->encoder->hashPassword($user, $plainPassword));
         }
