@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\FormManagers;
 
 use App\DTO\RecipeDTO;
 use App\Entity\Recipe;
@@ -15,7 +15,7 @@ class RecipeManager implements FormHandlerInterface
     {
     }
 
-    public const FormType = RecipeType::class;
+    public const FORM_TYPE = RecipeType::class;
 
     public function createDTO(): RecipeDTO
     {

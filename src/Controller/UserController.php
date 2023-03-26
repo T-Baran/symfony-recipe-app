@@ -7,7 +7,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Service\ErrorManager;
-use App\Service\UserManager;
+use App\Service\FormManagers\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +17,7 @@ class UserController extends ApiController
 {
     public function __construct(private UserRepository $userRepository, private UserManager $userManager, private ErrorManager $errorManager)
     {
+        parent::__construct($this->errorManager);
     }
 
     #[Route('/register', name: 'user_register', methods: ['POST'])]

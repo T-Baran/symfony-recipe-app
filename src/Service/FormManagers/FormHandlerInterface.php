@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\FormManagers;
 
 interface FormHandlerInterface
 {
-    public const FormType = '';
+    public const FORM_TYPE = '';
 
     public function createDTO();
 

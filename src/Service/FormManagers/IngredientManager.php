@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\FormManagers;
 
 
 use App\DTO\IngredientDTO;
@@ -8,15 +8,13 @@ use App\Entity\Ingredient;
 use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
 
-class IngredientManager implements FormHandlerInterface
+class IngredientManager extends AbstractFormManager
 {
-    private int $id;
-
     public function __construct(private IngredientRepository $ingredientRepository, private UserManager $userManager)
     {
     }
 
-    public const FormType = IngredientType::class;
+    public const FORM_TYPE = IngredientType::class;
 
     public function createDTO(): IngredientDTO
     {
@@ -34,7 +32,7 @@ class IngredientManager implements FormHandlerInterface
         return $ingredient;
     }
 
-    public function flushRecord($ingredient)
+    public function flushRecord($ingredient):void
     {
         $this->ingredientRepository->onlyFlush();
         $this->setId($ingredient->getId());
@@ -45,15 +43,6 @@ class IngredientManager implements FormHandlerInterface
         return '/api/ingredients/' . $this->getId();
     }
 
-    public function handleIngredientWithId(IngredientDTO $ingredientDTO): Ingredient
-    {
-        if ((!$id = $ingredientDTO->getId()) || !$ingredient = $this->ingredientRepository->find($id)) {
-            return $this->createIngredient($ingredientDTO);
-        }
-        $ingredientDTO->transferTo($ingredient);
-        return $ingredient;
-    }
-
     private function createIngredient(IngredientDTO $ingredientDTO): Ingredient
     {
         $ingredient = new Ingredient();
@@ -62,16 +51,4 @@ class IngredientManager implements FormHandlerInterface
         $this->ingredientRepository->save($ingredient);
         return $ingredient;
     }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
-
-
 }

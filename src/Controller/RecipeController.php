@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
-use App\DTO\RecipeDTO;
 use App\Entity\Recipe;
-use App\Form\RecipeType;
-use App\Repository\IngredientRepository;
 use App\Repository\RecipeRepository;
 use App\Service\ErrorManager;
-use App\Service\RecipeManager;
+use App\Service\FormManagers\RecipeManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

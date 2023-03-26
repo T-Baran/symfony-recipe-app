@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\FormManagers;
 
 use App\DTO\RecipeIngredientDTO;
 use App\Entity\RecipeIngredient;
@@ -35,17 +35,6 @@ class RecipeIngredientManager
         $recipeIngredient = new RecipeIngredient();
         $recipeIngredientDTO->transferTo($recipeIngredient);
         $this->recipeIngredientRepository->save($recipeIngredient);
-        return $recipeIngredient;
-    }
-
-    private function returnPersistedRecipeIngredient(RecipeIngredientDTO $recipeIngredientDTO): RecipeIngredient
-    {
-        if (!$id = $recipeIngredientDTO->getId()) {
-            $recipeIngredient = new RecipeIngredient();
-            $this->recipeIngredientRepository->save($recipeIngredient);
-        } else if (!$recipeIngredient = $this->recipeIngredientRepository->find($id)) {
-            throw new NotFoundHttpException('The RecipeIngredient with ID ' . $id . ' was not found');
-        }
         return $recipeIngredient;
     }
 }

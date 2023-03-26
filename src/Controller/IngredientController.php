@@ -8,7 +8,7 @@ use App\Form\IngredientType;
 use App\Repository\IngredientRepository;
 use App\Repository\RecipeIngredientRepository;
 use App\Service\ErrorManager;
-use App\Service\IngredientManager;
+use App\Service\FormManagers\IngredientManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

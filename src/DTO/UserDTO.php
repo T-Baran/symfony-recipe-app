@@ -71,16 +71,19 @@ class UserDTO
         $this->plainPassword = $plainPassword;
     }
 
-    public function transferTo(User $user):void
+    public function transferTo(User $user): void
     {
-        if(!is_null($email = $this->getEmail())){
-            $user->setEmail($email);
-        }
-        if(!is_null($username = $this->getUsername())){
-            $user->setUsername($username);
-        }
-        if(!is_null($roles = $this->getRoles())){
-            $user->setRoles($roles);
-        }
+        $user->setEmail($this->getEmail());
+        $user->setUsername($this->getUsername());
+        $user->setRoles($this->getRoles());
+//        if (!is_null($email = $this->getEmail())) {
+//            $user->setEmail($email);
+//        }
+//        if (!is_null($username = $this->getUsername())) {
+//            $user->setUsername($username);
+//        }
+//        if (!is_null($roles = $this->getRoles())) {
+//            $user->setRoles($roles);
+//        }
     }
 }

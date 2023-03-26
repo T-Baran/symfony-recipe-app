@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ErrorManager;
-use App\Service\FormHandlerInterface;
+use App\Service\FormManagers\FormHandlerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -81,6 +81,7 @@ class ApiController extends AbstractController
     protected function returnTransformedData(Request $request): array
     {
         $body = $request->getContent();
+//        dd($body);
         return json_decode($body, true);
     }
 
@@ -89,7 +90,7 @@ class ApiController extends AbstractController
         $data = $this->returnTransformedData($request);
         $clearMissing = $request->getMethod() !== 'PATCH';
         $ingredientDTO = $manager->createDTO();
-        $form = $this->createForm($manager::FormType, $ingredientDTO);
+        $form = $this->createForm($manager::FORM_TYPE, $ingredientDTO);
         $form->submit($data, $clearMissing);
         if ($form->isValid()) {
             $recordId = $request->get('id');

@@ -62,7 +62,7 @@ class Ingredient
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -129,9 +129,6 @@ class Ingredient
         return $this;
     }
 
-    /**
-     * @return Collection<int, RecipeIngredient>
-     */
     public function getRecipeIngredients(): Collection
     {
         return $this->recipeIngredients;

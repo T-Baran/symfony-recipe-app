@@ -3,33 +3,21 @@
 namespace App\DTO;
 
 use App\Entity\Ingredient;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class IngredientDTO
 {
 
-    private ?string $name = null;
+    private ?string $name;
 
-    private ?int $id = null;
+    private ?int $id;
 
-    private ?int $calories = null;
+    private ?int $calories;
 
-    private ?int $carbohydrates = null;
+    private ?int $carbohydrates;
 
-    private ?int $fiber = null;
+    private ?int $fiber;
 
-    private ?int $protein = null;
-
-
-
-//    public function __construct(Ingredient $ingredient)
-//    {
-//        $this->setName($ingredient->getName());
-//        $this->setCalories($ingredient->getCalories());
-//        $this->setCarbohydrates($ingredient->getCarbohydrates());
-//        $this->setFiber($ingredient->getFiber());
-//        $this->setProtein($ingredient->getProtein());
-//    }
+    private ?int $protein;
 
     public function getId(): ?int
     {
@@ -91,22 +79,28 @@ class IngredientDTO
         $this->protein = $protein;
     }
 
-    public function transferTo(Ingredient $ingredient)
+    public function transferTo(Ingredient $ingredient):Ingredient
     {
-        if(!is_null($name = $this->getName())){
+//        $ingredient->setName($this->getName());
+//        $ingredient->setCalories($this->getCalories());
+//        $ingredient->setCarbohydrates($this->getCarbohydrates());
+//        $ingredient->setFiber($this->getFiber());
+//        $ingredient->setProtein($this->getProtein());
+        if (!is_null($name = $this->getName())) {
             $ingredient->setName($name);
         }
-        if(!is_null($calories = $this->getCalories())){
+        if (!is_null($calories = $this->getCalories())) {
             $ingredient->setCalories($calories);
         }
-        if(!is_null($carbohydrates = $this->getCarbohydrates())){
+        if (!is_null($carbohydrates = $this->getCarbohydrates())) {
             $ingredient->setCarbohydrates($carbohydrates);
         }
-        if(!is_null($fiber = $this->getFiber())){
+        if (!is_null($fiber = $this->getFiber())) {
             $ingredient->setFiber($fiber);
         }
-        if(!is_null($protein = $this->getProtein())){
+        if (!is_null($protein = $this->getProtein())) {
             $ingredient->setProtein($protein);
         }
+        return $ingredient;
     }
 }
