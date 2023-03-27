@@ -35,6 +35,11 @@ security:
             lazy: true
             provider: app_user_provider
 
+    role_hierarchy:
+        ROLE_EDITOR: ROLE_USER
+        ROLE_ADMIN: ROLE_EDITOR
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 

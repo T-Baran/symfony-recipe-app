@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 #[Route('/api/ingredients')]
 class IngredientController extends ApiController
 {
-    public function __construct(private IngredientRepository $ingredientRepository, private RecipeIngredientRepository $recipeIngredientRepository, private IngredientManager $ingredientManager, private ErrorManager $errorManager)
+    public function __construct(private IngredientRepository $ingredientRepository, private RecipeIngredientRepository $recipeIngredientRepository, private IngredientManager $ingredientManager, private ErrorManager $errorManager, private SerializerInterface $serializer)
     {
         parent::__construct($this->errorManager);
     }
@@ -26,14 +26,14 @@ class IngredientController extends ApiController
     // search -> define searched word
     // limit -> define how many ingredients should be returned
     #[Route('', name: 'ingredient_get', methods: 'GET')]
-    public function index(Request $request, SerializerInterface $serializer): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         if ($query = $request->query->all()) {
             $ingredients = $this->ingredientRepository->findByNameAndLimit($query['search'], $query['limit']??10);
         } else {
             $ingredients = $this->ingredientRepository->findAll();
         }
-            $data = $serializer->serialize($ingredients, 'json',
+            $data = $this->serializer->serialize($ingredients, 'json',
                 ['groups' => ['ingredient']]);
         return $this->response($data, [], true);
     }
@@ -45,9 +45,9 @@ class IngredientController extends ApiController
     }
 
     #[Route('/{id}', name: 'ingredient_show', methods: 'GET')]
-    public function show(Ingredient $ingredient, SerializerInterface $serializer): JsonResponse
+    public function show(Ingredient $ingredient): JsonResponse
     {
-        $data = $serializer->serialize($ingredient, 'json',
+        $data = $this->serializer->serialize($ingredient, 'json',
             ['groups' => ['ingredient','ingredient_detail']]);
         return $this->response($data, [], true);
     }

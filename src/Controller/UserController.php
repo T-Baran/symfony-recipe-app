@@ -11,25 +11,35 @@ use App\Service\FormManagers\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/users')]
 class UserController extends ApiController
 {
-    public function __construct(private UserRepository $userRepository, private UserManager $userManager, private ErrorManager $errorManager)
+    public function __construct(private UserRepository $userRepository, private UserManager $userManager, private ErrorManager $errorManager, private SerializerInterface $serializer)
     {
         parent::__construct($this->errorManager);
+    }
+
+    #[Route('/', name: 'user_index', methods: 'GET')]
+    public function index():JsonResponse
+    {
+        $users = $this->userRepository->findAll();
+        $data = $this->serializer->serialize($users, 'json',
+            ['groups' =>['user']]);
+        return $this->response($data,[],true);
     }
 
     #[Route('/register', name: 'user_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
-        return $this->handleForm($request);
+        return $this->handleForm($request, $this->userManager);
     }
 
     #[Route('/{id}', name: 'user_modify', methods: ['PUT', 'PATCH'])]
-    public function modify(User $user, Request $request): JsonResponse
+    public function modify(Request $request): JsonResponse
     {
-        return $this->handleForm($request, $user);
+        return $this->handleForm($request,$this->userManager);
     }
 
     #[Route('/{id}', name: 'user_delete', methods: ['DELETE'])]
@@ -38,23 +48,4 @@ class UserController extends ApiController
         $this->userRepository->remove($user, true);
         return $this->respondNoContent();
     }
-
-//    private function handleForm(Request $request, ?User $user = null): JsonResponse
-//    {
-//        $data = $this->returnTransformedData($request);
-//        $clearMissing = $request->getMethod() !== 'PATCH';
-//        $userDTO = new UserDTO();
-//        $form = $this->createForm(UserType::class, $userDTO);
-//        $form->submit($data, $clearMissing);
-//        if ($form->isValid()) {
-//            $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
-//            $this->userManager->handleUser($userDTO, $user);
-//            $this->setStatusCode($statusCode);
-//            return $this->response(sprintf('User %s successfully %s', $this->userManager->getUsername(),
-//                $statusCode === '201' ? 'created' : 'modified'
-//            ));
-//        }
-//        $this->setStatusCode(400);
-//        return $this->respondWithErrors($this->errorManager->getErrorsFromForm($form), []);
-//    }
 }

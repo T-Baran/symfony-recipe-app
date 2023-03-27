@@ -14,7 +14,7 @@ class UserDTO
 
     private ?string $username = null;
 
-    private ?string $plainPassword;
+    private ?string $plainPassword = null;
 
     public function getId(): ?int
     {
