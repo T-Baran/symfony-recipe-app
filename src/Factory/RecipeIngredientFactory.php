@@ -10,7 +10,7 @@ use Zenstruck\Foundry\RepositoryProxy;
 
 final class RecipeIngredientFactory extends ModelFactory
 {
-    private array $unitArray = ['g', 'ml', 'tbs', 'tsp', 'cup', 'pcs', 'pinch'];
+    private array $unitArray = ['g', 'ml', 'tbsp', 'tsp', 'cup', 'pinch'];
 
     public function __construct()
     {

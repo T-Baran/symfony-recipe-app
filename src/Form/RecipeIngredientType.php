@@ -20,9 +20,8 @@ class RecipeIngredientType extends AbstractType
                     'g' => 'g',
                     'ml' => 'ml',
                     'cup' => 'cup',
-                    'tbs' => 'tbs',
+                    'tbsp' => 'tbs',
                     'tsp' => 'tsp',
-                    'pcs' => 'pcs',
                     'pinch' => 'pinch'
                 ]
             ])
