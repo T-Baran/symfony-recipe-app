@@ -39,6 +39,9 @@ class Ingredient
     #[Groups(['recipe_detail','ingredient'])]
     private ?int $protein = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $fat = null;
+
     #[ORM\ManyToOne(inversedBy: 'ingredients')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['ingredient_detail'])]
@@ -152,6 +155,18 @@ class Ingredient
                 $recipeIngredient->setIngredient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFat(): ?int
+    {
+        return $this->fat;
+    }
+
+    public function setFat(?int $fat): self
+    {
+        $this->fat = $fat;
 
         return $this;
     }

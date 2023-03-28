@@ -60,6 +60,11 @@ class IngredientControllerTest extends WebTestCase
         $client->request('POST', '/api/ingredients', content: $content);
         $response = $client->getResponse();
         $this->basicNotValidTests($response);
+
+        $content = json_encode($this->macronutrientsOver100());
+        $client->request('POST', '/api/ingredients', content: $content);
+        $response = $client->getResponse();
+        $this->basicNotValidTests($response);
     }
 
     public function testControllerPutFullValid(): void
@@ -95,6 +100,16 @@ class IngredientControllerTest extends WebTestCase
         $client = $this->createAuthenticatedClient();
 
         $content = json_encode($this->partialNotValidIngredientData());
+        $client->request('PUT', '/api/ingredients/3', content: $content);
+        $response = $client->getResponse();
+        $this->basicNotValidTests($response);
+    }
+
+    public function testControllerPutMacronutrientsOver100(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $content = json_encode($this->macronutrientsOver100());
         $client->request('PUT', '/api/ingredients/3', content: $content);
         $response = $client->getResponse();
         $this->basicNotValidTests($response);
@@ -142,6 +157,16 @@ class IngredientControllerTest extends WebTestCase
         $this->basicvalueTests($this->partialNotValidIngredientData(), $ingredientRecord, 3);
     }
 
+    public function testControllerPatchMacronutrientsOver100(): void
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $content = json_encode($this->macronutrientsOver100());
+        $client->request('PATCH', '/api/ingredients/3', content: $content);
+        $response = $client->getResponse();
+        $this->basicNotValidTests($response);
+    }
+
     public function testControllerDeleteSuccess(): void
     {
         $client = $this->createAuthenticatedClient();
@@ -178,9 +203,10 @@ class IngredientControllerTest extends WebTestCase
         return [
             'name' => 'full',
             'calories' => 111,
-            'carbohydrates' => 22,
-            'fiber' => 33,
-            'protein' => 44
+            'carbohydrates' => 10,
+            'fiber' => 20,
+            'protein' => 30,
+            'fat' => 25
         ];
     }
 
@@ -198,6 +224,16 @@ class IngredientControllerTest extends WebTestCase
         return [
             'calories' => 111,
             'carbohydrates' => 22
+        ];
+    }
+
+    private function macronutrientsOver100():array
+    {
+        return [
+            'name' => 'over100',
+            'carbohydrates' => 40,
+            'fiber'=>40,
+            'fat'=>40
         ];
     }
 
@@ -240,6 +276,9 @@ class IngredientControllerTest extends WebTestCase
         }
         if (array_key_exists('fiber', $inputArray)) {
             $this->assertEquals($inputArray['fiber'], $ingredientRecord->getFiber());
+        }
+        if (array_key_exists('fat', $inputArray)) {
+            $this->assertEquals($inputArray['fat'], $ingredientRecord->getFat());
         }
     }
 

@@ -44,11 +44,12 @@ class IngredientType extends AbstractType
                     new Range(['min'=>0, 'max'=>100])
                 ]
             ])
-            ->add('id', NumberType::class,[
-                'constraints'=> [
-                    new PositiveOrZero()
+            ->add('fat', NumberType::class,[
+                'constraints'=>[
+                    new Range(['min'=>0,'max'=>100])
                 ]
-            ]);
+            ])
+            ->add('id', NumberType::class);
 
     }
 
@@ -65,10 +66,9 @@ class IngredientType extends AbstractType
 
     public function validateNutrition(IngredientDTO $data, ExecutionContextInterface $context):void
     {
-//        dd($data->getCarbohydrates());
-        $total = $data->getCarbohydrates()+$data->getFiber()+$data->getProtein();
+        $total = $data->getCarbohydrates()+$data->getFiber()+$data->getProtein()+$data->getFat();
         if($total>=100){
-            $context->buildViolation('The total amount of macronutrients should be less than 100')
+            $context->buildViolation('The total amount of macronutrients should be less than 100g in 100g of ingredient')
                 ->atPath('carbohydrates')
                 ->addViolation();
         }

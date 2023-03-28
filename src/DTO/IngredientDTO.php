@@ -19,6 +19,8 @@ class IngredientDTO
 
     private ?int $protein = null;
 
+    private ?int $fat = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +81,18 @@ class IngredientDTO
         $this->protein = $protein;
     }
 
+    public function getFat(): ?int
+    {
+        return $this->fat;
+    }
+
+    public function setFat(?int $fat): void
+    {
+        $this->fat = $fat;
+    }
+
+
+
     public function transferTo(Ingredient $ingredient):Ingredient
     {
         $ingredient->setName($this->getName());
@@ -86,6 +100,7 @@ class IngredientDTO
         $ingredient->setCarbohydrates($this->getCarbohydrates());
         $ingredient->setFiber($this->getFiber());
         $ingredient->setProtein($this->getProtein());
+        $ingredient->setFat($this->getFat());
 
         return $ingredient;
     }
@@ -98,5 +113,6 @@ class IngredientDTO
         $this->setFiber($ingredient->getFiber());
         $this->setProtein($ingredient->getProtein());
         $this->setId($ingredient->getId());
+        $this->setFat($ingredient->getFat());
     }
 }

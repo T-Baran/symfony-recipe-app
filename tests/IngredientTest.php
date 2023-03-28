@@ -25,6 +25,7 @@ class IngredientTest extends KernelTestCase
         $ingredient->setCarbohydrates(40);
         $ingredient->setFiber(50);
         $ingredient->setProtein(60);
+        $ingredient->setFat(20);
 
         $this->entityManager->persist($ingredient);
         $this->entityManager->flush($ingredient);
@@ -37,6 +38,7 @@ class IngredientTest extends KernelTestCase
         $this->assertEquals(40, $ingredientRecord->getCarbohydrates());
         $this->assertEquals(50, $ingredientRecord->getFiber());
         $this->assertEquals(60, $ingredientRecord->getProtein());
+        $this->assertEquals(20, $ingredientRecord->getFat());
     }
 
     protected function tearDown(): void
