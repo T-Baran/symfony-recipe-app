@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\DTO\UserDTO;
+use App\Validator\UserValidator\UniqueEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -16,7 +17,11 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', EmailType::class)
+            ->add('email', EmailType::class,[
+                'constraints'=>[
+                    new UniqueEmail(),
+                ]
+            ])
             ->add('roles', ChoiceType::class, [
                 'multiple' => true,
                 'expanded' => true,

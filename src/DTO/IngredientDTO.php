@@ -7,17 +7,17 @@ use App\Entity\Ingredient;
 class IngredientDTO
 {
 
-    private ?string $name;
+    private ?string $name = null;
 
-    private ?int $id;
+    private ?int $id = null;
 
-    private ?int $calories;
+    private ?int $calories = null;
 
-    private ?int $carbohydrates;
+    private ?int $carbohydrates = null;
 
-    private ?int $fiber;
+    private ?int $fiber = null;
 
-    private ?int $protein;
+    private ?int $protein = null;
 
     public function getId(): ?int
     {
@@ -97,5 +97,6 @@ class IngredientDTO
         $this->setCarbohydrates($ingredient->getCarbohydrates());
         $this->setFiber($ingredient->getFiber());
         $this->setProtein($ingredient->getProtein());
+        $this->setId($ingredient->getId());
     }
 }

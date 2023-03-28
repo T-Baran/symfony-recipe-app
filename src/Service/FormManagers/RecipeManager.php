@@ -7,27 +7,31 @@ use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 
-class RecipeManager implements FormHandlerInterface
+class RecipeManager extends AbstractFormManager
 {
-    private int $id;
-
     public function __construct(private RecipeRepository $recipeRepository, private RecipeIngredientManager $recipeIngredientManager, private UserManager $userManager)
     {
     }
 
     public const FORM_TYPE = RecipeType::class;
 
-    public function createDTO(): RecipeDTO
+    public function createDTO($id = null): RecipeDTO
     {
-        return new RecipeDTO();
+        $DTO = new RecipeDTO();
+        if(!is_null($id)){
+            $record = $this->recipeRepository->find($id);
+            $this->setRecord($record);
+            $DTO->transferFrom($record);
+        }
+        return $DTO;
     }
 
-    public function saveRecord($recipeDTO, $id): Recipe
+    public function saveRecord($recipeDTO): Recipe
     {
-        if (is_null($id)) {
+        if (is_null($this->getRecord())) {
             $recipe = $this->createRecipe($recipeDTO);
         } else {
-            $recipe = $this->recipeRepository->find($id);
+            $recipe = $this->getRecord();
             $recipeDTO->transferTo($recipe);
         }
         foreach ($recipeDTO->getIngredients() as $recipeIngredientDTO) {
@@ -55,15 +59,5 @@ class RecipeManager implements FormHandlerInterface
         $this->userManager->setCurrentUser($recipe);
         $this->recipeRepository->save($recipe);
         return $recipe;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    private function setId(int $id): void
-    {
-        $this->id = $id;
     }
 }

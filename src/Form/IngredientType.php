@@ -3,15 +3,16 @@
 namespace App\Form;
 
 use App\DTO\IngredientDTO;
-use App\Entity\Ingredient;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class IngredientType extends AbstractType
 {
@@ -30,8 +31,8 @@ class IngredientType extends AbstractType
             ])
             ->add('carbohydrates', NumberType::class,[
                 'constraints'=> [
-                    new Range(['min'=>0, 'max'=>100])
-                    ]
+                    new Range(['min'=>0, 'max'=>100]),
+                ]
                 ])
             ->add('fiber', NumberType::class,[
                 'constraints'=> [
@@ -55,10 +56,21 @@ class IngredientType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => IngredientDTO::class,
-            'empty_data' => function(){
-                return new IngredientDTO(new Ingredient());
-            },
             'csrf_protection' => false,
+            'constraints'=>[
+                new callback([$this, 'validateNutrition']),
+            ]
         ]);
+    }
+
+    public function validateNutrition(IngredientDTO $data, ExecutionContextInterface $context):void
+    {
+//        dd($data->getCarbohydrates());
+        $total = $data->getCarbohydrates()+$data->getFiber()+$data->getProtein();
+        if($total>=100){
+            $context->buildViolation('The total amount of macronutrients should be less than 100')
+                ->atPath('carbohydrates')
+                ->addViolation();
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Entity\Ingredient;
 use App\Entity\RecipeIngredient;
 
 
@@ -63,11 +64,15 @@ class RecipeIngredientDTO
     {
         $recipeIngredient->setUnit($this->getUnit());
         $recipeIngredient->setQuantity($this->getQuantity());
-//        if (!is_null($unit = $this->getUnit())) {
-//            $recipeIngredient->setUnit($unit);
-//        }
-//        if (!is_null($quantity = $this->getQuantity())) {
-//            $recipeIngredient->setQuantity($quantity);
-//        }
+    }
+
+    public function transferFrom(RecipeIngredient $recipeIngredient):void
+    {
+        $this->setId($recipeIngredient->getId());
+        $this->setUnit($recipeIngredient->getUnit());
+        $this->setQuantity($recipeIngredient->getQuantity());
+        $ingredientDTO = new IngredientDTO();
+        $ingredientDTO->transferFrom($recipeIngredient->getIngredient());
+        $this->setIngredient($ingredientDTO);
     }
 }

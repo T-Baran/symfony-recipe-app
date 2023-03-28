@@ -17,17 +17,23 @@ class UserManager extends AbstractFormManager
 
     public const FORM_TYPE = UserType::class;
 
-    public function createDTO(): UserDTO
+    public function createDTO($id): UserDTO
     {
-        return new UserDTO();
+        $DTO = new UserDTO();
+        if(!is_null($id)){
+            $record = $this->userRepository->find($id);
+            $this->setRecord($record);
+            $DTO->transferFrom($record);
+        }
+        return $DTO;
     }
 
-    public function saveRecord($userDTO, $id = null): User
+    public function saveRecord($userDTO): User
     {
-        if (is_null($id)) {
+        if (is_null($this->getRecord())) {
             $user = $this->createUser($userDTO);
         } else {
-            $user = $this->userRepository->find($id);
+            $user = $this->getRecord();
             $userDTO->transferTo($user);
             if($plainPassword = $userDTO->getPlainPassword()){
                 $user->setPassword($this->encoder->hashPassword($user, $plainPassword));
@@ -51,9 +57,10 @@ class UserManager extends AbstractFormManager
     {
         $user = new User();
         $userDTO->transferTo($user);
-        if($plainPassword = $userDTO->getPlainPassword()){
-            $user->setPassword($this->encoder->hashPassword($user, $plainPassword));
+        if(!$plainPassword = $userDTO->getPlainPassword()){
+            throw new \Exception('When creating new account must provide password');
         }
+        $user->setPassword($this->encoder->hashPassword($user, $plainPassword));
         $this->userRepository->save($user);
         return $user;
     }
@@ -64,4 +71,21 @@ class UserManager extends AbstractFormManager
             $object->setUser($this->security->getUser());
         }
     }
+
+    public function setRecord($record):void
+    {
+        if ($record instanceof User) {
+            $this->record = $record;
+        } else {
+            throw new \InvalidArgumentException('Invalid type for record, should provide instance of User');
+        }
+    }
+//
+//    private function isEmailUnique(string $email): void
+//    {
+//        $user = $this->userRepository->findOneBy(['email' => $email]);
+//        if ($user !== null) {
+//            throw new EmailNotUniqueException(sprintf('The email "%s" is already in use.', $email));
+//        }
+//    }
 }

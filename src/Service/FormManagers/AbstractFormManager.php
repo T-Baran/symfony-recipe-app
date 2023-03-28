@@ -6,6 +6,8 @@ abstract class AbstractFormManager implements FormHandlerInterface
 {
     protected int $id;
 
+    protected ?object $record = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -15,4 +17,16 @@ abstract class AbstractFormManager implements FormHandlerInterface
     {
         $this->id = $id;
     }
+
+    public function getRecord()
+    {
+        return $this->record;
+    }
+
+    public function setRecord($record): void
+    {
+        $this->record = $record;
+    }
+
+
 }

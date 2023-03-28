@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use App\Entity\User;
 
+
 class UserDTO
 {
     private ?int $id = null;
@@ -76,14 +77,12 @@ class UserDTO
         $user->setEmail($this->getEmail());
         $user->setUsername($this->getUsername());
         $user->setRoles($this->getRoles());
-//        if (!is_null($email = $this->getEmail())) {
-//            $user->setEmail($email);
-//        }
-//        if (!is_null($username = $this->getUsername())) {
-//            $user->setUsername($username);
-//        }
-//        if (!is_null($roles = $this->getRoles())) {
-//            $user->setRoles($roles);
-//        }
+    }
+
+    public function transferFrom(User $user):void
+    {
+        $this->setEmail($user->getEmail());
+        $this->setUsername($user->getUsername());
+        $this->setRoles($user->getRoles());
     }
 }

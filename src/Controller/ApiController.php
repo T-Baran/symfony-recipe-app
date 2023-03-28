@@ -89,12 +89,12 @@ class ApiController extends AbstractController
     {
         $data = $this->returnTransformedData($request);
         $clearMissing = $request->getMethod() !== 'PATCH';
-        $DTO = $manager->createDTO();
+        $recordId = $request->get('id');
+        $DTO = $manager->createDTO($recordId);
         $form = $this->createForm($manager::FORM_TYPE, $DTO);
         $form->submit($data, $clearMissing);
         if ($form->isValid()) {
-            $recordId = $request->get('id');
-            $object = $manager->saveRecord($DTO, $recordId);
+            $object = $manager->saveRecord($DTO);
             $manager->flushRecord($object);
             $statusCode = $request->getMethod() === 'POST' ? '201' : '204';
             $this->setStatusCode($statusCode);

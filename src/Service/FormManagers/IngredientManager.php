@@ -16,17 +16,28 @@ class IngredientManager extends AbstractFormManager
 
     public const FORM_TYPE = IngredientType::class;
 
-    public function createDTO(): IngredientDTO
+    public function createDTO($id = null): IngredientDTO
     {
-        return new IngredientDTO();
+        $ingredientDTO = new ingredientDTO();
+        if(!is_null($id)){
+            $record = $this->ingredientRepository->find($id);
+            $this->setRecord($record);
+            $ingredientDTO->transferFrom($record);
+        }
+        return $ingredientDTO;
     }
 
-    public function saveRecord($ingredientDTO, $id = null): Ingredient
+    public function saveRecord($ingredientDTO, $updateId = null): Ingredient
     {
-        if (is_null($id)) {
+        if(!is_null($updateId)){
+            $ingredient = $this->ingredientRepository->find($updateId);
+            $ingredientDTO->transferTo($ingredient);
+            return $ingredient;
+        }
+        if (is_null($this->getRecord())) {
             $ingredient = $this->createIngredient($ingredientDTO);
         } else {
-            $ingredient = $this->ingredientRepository->find($id);
+            $ingredient = $this->getRecord();
             $ingredientDTO->transferTo($ingredient);
         }
         return $ingredient;

@@ -76,24 +76,32 @@ class RecipeDTO
         return $this;
     }
 
+    public function addIngredient(RecipeIngredientDTO $recipeIngredientDTO):self
+    {
+        $this->ingredients[] = $recipeIngredientDTO;
+
+        return $this;
+    }
+
     public function transferTo(Recipe $recipe): Recipe
     {
         $recipe->setName($this->getName());
         $recipe->setPreparationTime($this->getPreparationTime());
         $recipe->setServings($this->getServings());
         $recipe->setInstructions($this->getInstructions());
-//        if (!is_null($name = $this->getName())) {
-//            $recipe->setName($name);
-//        }
-//        if (!is_null($preparationTime = $this->getPreparationTime())) {
-//            $recipe->setPreparationTime($preparationTime);
-//        }
-//        if (!is_null($servings = $this->getServings())) {
-//            $recipe->setServings($servings);
-//        }
-//        if (!is_null($instructions = $this->getInstructions())) {
-//            $recipe->setInstructions($instructions);
-//        }
         return $recipe;
+    }
+
+    public function transferFrom(Recipe $recipe):void
+    {
+        $this->setName($recipe->getName());
+        $this->setPreparationTime($recipe->getPreparationTime());
+        $this->setServings($recipe->getServings());
+        $this->setInstructions($recipe->getInstructions());
+        foreach($recipe->getRecipeIngredients() as $recipeIngredient){
+            $recipeIngredientDTO = new RecipeIngredientDTO();
+            $recipeIngredientDTO->transferFrom($recipeIngredient);
+            $this->addIngredient($recipeIngredientDTO);
+        }
     }
 }

@@ -2,9 +2,7 @@
 
 namespace App\Controller;
 
-use App\DTO\UserDTO;
 use App\Entity\User;
-use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Service\ErrorManager;
 use App\Service\FormManagers\UserManager;
@@ -21,7 +19,7 @@ class UserController extends ApiController
         parent::__construct($this->errorManager);
     }
 
-    #[Route('/', name: 'user_index', methods: 'GET')]
+    #[Route('', name: 'user_index', methods: 'GET')]
     public function index():JsonResponse
     {
         $users = $this->userRepository->findAll();
@@ -30,7 +28,7 @@ class UserController extends ApiController
         return $this->response($data,[],true);
     }
 
-    #[Route('/register', name: 'user_register', methods: ['POST'])]
+    #[Route('', name: 'user_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
         return $this->handleForm($request, $this->userManager);
