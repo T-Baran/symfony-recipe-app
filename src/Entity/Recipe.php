@@ -42,6 +42,9 @@ class Recipe
     #[Groups(['recipe'])]
     private array $instructions = [];
 
+    #[ORM\OneToOne(mappedBy: 'recipe', cascade: ['persist', 'remove'])]
+    private ?TotalRecipeNutrient $totalRecipeNutrient = null;
+
     public function __construct()
     {
         $this->recipeIngredients = new ArrayCollection();
@@ -138,6 +141,23 @@ class Recipe
     public function setInstructions(?array $instructions): self
     {
         $this->instructions = $instructions;
+
+        return $this;
+    }
+
+    public function getTotalRecipeNutrient(): ?TotalRecipeNutrient
+    {
+        return $this->totalRecipeNutrient;
+    }
+
+    public function setTotalRecipeNutrient(TotalRecipeNutrient $totalRecipeNutrient): self
+    {
+        // set the owning side of the relation if necessary
+        if ($totalRecipeNutrient->getRecipe() !== $this) {
+            $totalRecipeNutrient->setRecipe($this);
+        }
+
+        $this->totalRecipeNutrient = $totalRecipeNutrient;
 
         return $this;
     }

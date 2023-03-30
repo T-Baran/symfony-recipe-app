@@ -2,18 +2,18 @@
 
 namespace App\Repository;
 
-use App\Entity\Recipe;
+use App\Entity\TotalRecipeNutrient;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class RecipeRepository extends ServiceEntityRepository
+class TotalRecipeNutrientRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Recipe::class);
+        parent::__construct($registry, TotalRecipeNutrient::class);
     }
 
-    public function save(Recipe $entity, bool $flush = false): void
+    public function save(TotalRecipeNutrient $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -22,18 +22,7 @@ class RecipeRepository extends ServiceEntityRepository
         }
     }
 
-    public function saveWithFlush(Recipe $entity): void
-    {
-        $this->getEntityManager()->persist($entity);
-        $this->getEntityManager()->flush();
-    }
-
-    public function onlyFlush():void
-    {
-        $this->getEntityManager()->flush();
-    }
-
-    public function remove(Recipe $entity, bool $flush = false): void
+    public function remove(TotalRecipeNutrient $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -43,7 +32,7 @@ class RecipeRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return Recipe[] Returns an array of Recipe objects
+//     * @return TotalRecipeNutrient[] Returns an array of TotalRecipeNutrient objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -57,7 +46,7 @@ class RecipeRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Recipe
+//    public function findOneBySomeField($value): ?TotalRecipeNutrient
 //    {
 //        return $this->createQueryBuilder('r')
 //            ->andWhere('r.exampleField = :val')
