@@ -14,23 +14,19 @@ class TotalRecipeNutrient
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $calories = null;
+    private ?int $calories = 0;
 
     #[ORM\Column]
-    private ?int $carbohydrates = null;
+    private ?int $carbohydrates = 0;
 
     #[ORM\Column]
-    private ?int $fiber = null;
+    private ?int $fiber = 0;
 
     #[ORM\Column]
-    private ?int $protein = null;
+    private ?int $protein = 0;
 
     #[ORM\Column]
-    private ?int $fat = null;
-
-    #[ORM\OneToOne(inversedBy: 'totalRecipeNutrient', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Recipe $recipe = null;
+    private ?int $fat = 0;
 
     public function getId(): ?int
     {
@@ -93,18 +89,6 @@ class TotalRecipeNutrient
     public function setFat(int $fat): self
     {
         $this->fat = $fat;
-
-        return $this;
-    }
-
-    public function getRecipe(): ?Recipe
-    {
-        return $this->recipe;
-    }
-
-    public function setRecipe(Recipe $recipe): self
-    {
-        $this->recipe = $recipe;
 
         return $this;
     }

@@ -8,9 +8,9 @@ class MacronutrientsCalculator
 {
     private int $grams;
 
-    private Ingredient $ingredient;
+    private array $ingredient;
 
-    public function __construct(Ingredient $ingredient, int $grams)
+    public function __construct(array $ingredient, int $grams)
     {
         $this->ingredient = $ingredient;
         $this->grams = $grams;
@@ -18,26 +18,26 @@ class MacronutrientsCalculator
 
     public function calculateTotalIngredientCalories(): int
     {
-        return $this->ingredient->getCalories() * $this->grams / 100;
+        return $this->ingredient['calories'] * $this->grams / 100;
     }
 
     public function calculateTotalIngredientCarbohydrates(): int
     {
-        return $this->ingredient->getCarbohydrates() * $this->grams / 100;
+        return $this->ingredient['carbohydrates'] * $this->grams / 100;
     }
 
     public function calculateTotalIngredientFiber(): int
     {
-        return $this->ingredient->getFiber() * $this->grams / 100;
+        return $this->ingredient['fiber'] * $this->grams / 100;
     }
 
     public function calculateTotalIngredientProtein(): int
     {
-        return $this->ingredient->getProtein() * $this->grams / 100;
+        return $this->ingredient['protein'] * $this->grams / 100;
     }
 
     public function calculateTotalIngredientFat(): int
     {
-        return $this->ingredient->getFat() * $this->grams / 100;
+        return $this->ingredient['fat'] * $this->grams / 100;
     }
 }

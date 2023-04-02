@@ -31,7 +31,7 @@ class IngredientManager extends AbstractFormManager
     {
         if(!is_null($updateId)){
             $ingredient = $this->ingredientRepository->find($updateId);
-            $ingredientDTO->transferTo($ingredient);
+            $ingredientDTO->transferToOmitNull($ingredient);
             return $ingredient;
         }
         if (is_null($this->getRecord())) {

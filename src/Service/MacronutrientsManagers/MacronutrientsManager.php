@@ -23,19 +23,29 @@ class MacronutrientsManager
     {
     }
 
-
-    public function saveRecord(array $recipeIngredients): TotalRecipeNutrient
+    public function saveRecord(Recipe $recipe): TotalRecipeNutrient
     {
-        foreach ($recipeIngredients as $recipeIngredient) {
-            $ingredient = $recipeIngredient->getIngredient();
-            $grams = UnitConverter::convertToGrams($recipeIngredient->getQuantity(), $recipeIngredient->getUnit());
-            $calculator = new MacronutrientsCalculator($ingredient, $grams);
+        $records = $this->getAllRecipeIngredients($recipe->getId());
+//        dd($records);
+        foreach ($records as $recipeIngredient) {
+            $grams = UnitConverter::convertToGrams($recipeIngredient['quantity'], $recipeIngredient['unit']);
+            $calculator = new MacronutrientsCalculator($recipeIngredient, $grams);
             $this->addMacronutrients($calculator);
         }
         $newTotalNutrient = new TotalRecipeNutrient();
         $this->totalRecipeNutrientRepository->save($newTotalNutrient);
         $this->mapTotalNutrient($newTotalNutrient);
         return $newTotalNutrient;
+    }
+
+    public function getAllRecipeIngredients(int $recipeId):array
+    {
+        return $this->recipeIngredientRepository->getMacronutrientsByRecipe($recipeId);
+    }
+
+    public function removeRecord(TotalRecipeNutrient $totalRecipeNutrient):void
+    {
+        $this->totalRecipeNutrientRepository->remove($totalRecipeNutrient);
     }
 
     private function addMacronutrients(MacronutrientsCalculator $calculator): void

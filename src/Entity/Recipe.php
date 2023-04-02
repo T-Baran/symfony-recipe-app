@@ -42,7 +42,12 @@ class Recipe
     #[Groups(['recipe'])]
     private array $instructions = [];
 
-    #[ORM\OneToOne(mappedBy: 'recipe', cascade: ['persist', 'remove'])]
+    #[ORM\Column]
+    private bool $needUpdateTotalRecipeNutrient = true;
+
+//    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: TotalRecipeNutrient::class, orphanRemoval: true)]
+    #[ORM\JoinColumn(name: "total_recipe_nutrient_id", referencedColumnName: "id", onDelete: "CASCADE")]
     private ?TotalRecipeNutrient $totalRecipeNutrient = null;
 
     public function __construct()
@@ -145,18 +150,23 @@ class Recipe
         return $this;
     }
 
+    public function isNeedUpdateTotalRecipeNutrient(): bool
+    {
+        return $this->needUpdateTotalRecipeNutrient;
+    }
+
+    public function setNeedUpdateTotalRecipeNutrient(bool $needUpdateTotalRecipeNutrient): void
+    {
+        $this->needUpdateTotalRecipeNutrient = $needUpdateTotalRecipeNutrient;
+    }
+
     public function getTotalRecipeNutrient(): ?TotalRecipeNutrient
     {
         return $this->totalRecipeNutrient;
     }
 
-    public function setTotalRecipeNutrient(TotalRecipeNutrient $totalRecipeNutrient): self
+    public function setTotalRecipeNutrient(?TotalRecipeNutrient $totalRecipeNutrient): self
     {
-        // set the owning side of the relation if necessary
-        if ($totalRecipeNutrient->getRecipe() !== $this) {
-            $totalRecipeNutrient->setRecipe($this);
-        }
-
         $this->totalRecipeNutrient = $totalRecipeNutrient;
 
         return $this;

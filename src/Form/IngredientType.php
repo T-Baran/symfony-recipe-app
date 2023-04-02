@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -19,10 +18,11 @@ class IngredientType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('id', NumberType::class,[
+                'constraints'=>[]
+            ])
             ->add('name', TextType::class, [
-                'constraints' => [
-                    new NotBlank()
-                ]
+                'constraints' => []
             ])
             ->add('calories', NumberType::class,[
                 'constraints'=> [
@@ -48,8 +48,7 @@ class IngredientType extends AbstractType
                 'constraints'=>[
                     new Range(['min'=>0,'max'=>100])
                 ]
-            ])
-            ->add('id', NumberType::class);
+            ]);
 
     }
 
@@ -60,6 +59,7 @@ class IngredientType extends AbstractType
             'csrf_protection' => false,
             'constraints'=>[
                 new callback([$this, 'validateNutrition']),
+                new callback([$this, 'validateNameOrId'])
             ]
         ]);
     }
@@ -70,6 +70,16 @@ class IngredientType extends AbstractType
         if($total>=100){
             $context->buildViolation('The total amount of macronutrients should be less than 100g in 100g of ingredient')
                 ->atPath('carbohydrates')
+                ->addViolation();
+        }
+    }
+
+    public function validateNameOrId(IngredientDTO $data, ExecutionContextInterface $context):void
+    {
+        $nameOrIdExist = $data->getId() || $data->getName();
+        if(!$nameOrIdExist){
+            $context->buildViolation('You must provide a name or an id')
+                ->atPath('name')
                 ->addViolation();
         }
     }

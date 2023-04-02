@@ -92,8 +92,7 @@ class IngredientDTO
     }
 
 
-
-    public function transferTo(Ingredient $ingredient):Ingredient
+    public function transferTo(Ingredient $ingredient): Ingredient
     {
         $ingredient->setName($this->getName());
         $ingredient->setCalories($this->getCalories());
@@ -105,7 +104,30 @@ class IngredientDTO
         return $ingredient;
     }
 
-    public function transferFrom(Ingredient $ingredient):void
+    public function transferToOmitNull(Ingredient $ingredient): Ingredient
+    {
+        if (!is_null($this->getName())) {
+            $ingredient->setName($this->getName());
+        }
+        if (!is_null($this->getCalories())) {
+            $ingredient->setCalories($this->getCalories());
+        }
+        if (!is_null($this->getCarbohydrates())) {
+            $ingredient->setCarbohydrates($this->getCarbohydrates());
+        }
+        if (!is_null($this->getFiber())) {
+            $ingredient->setFiber($this->getFiber());
+        }
+        if (!is_null($this->getProtein())) {
+            $ingredient->setProtein($this->getProtein());
+        }
+        if (!is_null($this->getFat())) {
+            $ingredient->setFat($this->getFat());
+        }
+        return $ingredient;
+    }
+
+    public function transferFrom(Ingredient $ingredient): void
     {
         $this->setName($ingredient->getName());
         $this->setCalories($ingredient->getCalories());

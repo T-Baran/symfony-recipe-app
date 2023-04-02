@@ -6,14 +6,6 @@ use App\Entity\RecipeIngredient;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<RecipeIngredient>
- *
- * @method RecipeIngredient|null find($id, $lockMode = null, $lockVersion = null)
- * @method RecipeIngredient|null findOneBy(array $criteria, array $orderBy = null)
- * @method RecipeIngredient[]    findAll()
- * @method RecipeIngredient[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class RecipeIngredientRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -44,15 +36,17 @@ class RecipeIngredientRepository extends ServiceEntityRepository
         }
     }
 
-//    public function findByRecipeField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.recipe = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getMacronutrientsByRecipe($value): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.ingredient', 'i')
+            ->andWhere('r.recipe = :val')
+            ->setParameter('val', $value)
+            ->select('r.unit','r.quantity','i.calories', 'i.carbohydrates', 'i.fiber', 'i.protein', 'i.fat')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
     public function CheckIfIngredientCanBeDeleted($id): bool
     {

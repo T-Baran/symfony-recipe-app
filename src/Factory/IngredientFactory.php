@@ -22,8 +22,9 @@ final class IngredientFactory extends ModelFactory
             'name' => self::faker()->text(30),
             'calories' => self::faker()->numberBetween(0,1000),
             'carbohydrates' => self::faker()->numberBetween(0,30),
-            'fiber' => self::faker()->numberBetween(0,30),
-            'protein' => self::faker()->numberBetween(0,30)
+            'fiber' => self::faker()->numberBetween(0,10),
+            'protein' => self::faker()->numberBetween(0,30),
+            'fat' => self::faker()->numberBetween(0,30)
         ];
     }
 
