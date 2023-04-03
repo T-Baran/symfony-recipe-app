@@ -23,6 +23,15 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
                 username_path: email
                 password_path: password
+        api_token_refresh:
+            refresh_jwt:
+                check_path: /api/token/refresh
+            pattern: ^/api/token/refresh
+            stateless: true
+            provider: app_user_provider
+        api_token_logout:
+            logout:
+                path: api/token/invalidate
         api:
             pattern: ^/api
             stateless: true
@@ -38,7 +47,7 @@ security:
     role_hierarchy:
         ROLE_EDITOR: ROLE_USER
         ROLE_ADMIN: ROLE_EDITOR
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

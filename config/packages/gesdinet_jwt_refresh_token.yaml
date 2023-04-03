@@ -1,0 +1,6 @@
+gesdinet_jwt_refresh_token:
+  refresh_token_class: App\Entity\RefreshToken # This is the class name of the refresh token, you will need to adjust this to match the class your application will use
+  ttl: 2592000
+  ttl_update: true
+  return_expiration_parameter_name: refresh_token_expiration
+  logout_firewall: api_token_logout
