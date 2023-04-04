@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ace4fc3ead1a9940a27851d510fe803",
+    "content-hash": "7d2201d94055bb02b613acf72c47e779",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -5525,16 +5525,16 @@
         },
         {
             "name": "symfony/security-http",
-            "version": "v6.2.6",
+            "version": "v6.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security-http.git",
-                "reference": "77c95eada3e3f0bf3a50f89817a18819b357376e"
+                "reference": "6d47056ee9f394aeace1799e73ead5a2107f581d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security-http/zipball/77c95eada3e3f0bf3a50f89817a18819b357376e",
-                "reference": "77c95eada3e3f0bf3a50f89817a18819b357376e",
+                "url": "https://api.github.com/repos/symfony/security-http/zipball/6d47056ee9f394aeace1799e73ead5a2107f581d",
+                "reference": "6d47056ee9f394aeace1799e73ead5a2107f581d",
                 "shasum": ""
             },
             "require": {
@@ -5590,7 +5590,7 @@
             "description": "Symfony Security Component - HTTP Integration",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/security-http/tree/v6.2.6"
+                "source": "https://github.com/symfony/security-http/tree/v6.2.8"
             },
             "funding": [
                 {
@@ -5606,7 +5606,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-30T15:46:28+00:00"
+            "time": "2023-03-10T10:06:03+00:00"
         },
         {
             "name": "symfony/serializer",
