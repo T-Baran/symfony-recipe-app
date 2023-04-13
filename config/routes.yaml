@@ -3,3 +3,18 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+api_token_refresh:
+    path: /api/token/refresh
+
+api_login:
+    path: /api/login_check
+
+api_token_invalidate:
+    path: /api/token/invalidate
+
+app.swagger_ui:
+    path: /api/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
