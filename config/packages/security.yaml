@@ -11,9 +11,12 @@ security:
                 class: App\Entity\User
                 property: email
     firewalls:
-        register:
-            pattern: ^/api/register
-            stateless: true
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+#        register:
+#            pattern: ^/api/register
+#            stateless: true
         login:
             pattern: ^/api/login
             stateless: true
@@ -23,14 +26,20 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
                 username_path: email
                 password_path: password
+        api_token_refresh:
+            pattern: ^/api/token/refresh
+            stateless: true
+            refresh_jwt:
+                check_path: /api/token/refresh
+#        api_token_logout:
+
         api:
             pattern: ^/api
             stateless: true
             provider: app_user_provider
             jwt: ~
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+            logout:
+                path: /api/token/invalidate
         main:
             lazy: true
             provider: app_user_provider
@@ -38,7 +47,7 @@ security:
     role_hierarchy:
         ROLE_EDITOR: ROLE_USER
         ROLE_ADMIN: ROLE_EDITOR
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -49,6 +58,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
 #        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 #        - { path: ^/api,       roles: IS_AUTHENTICATED_REMEMBERED }

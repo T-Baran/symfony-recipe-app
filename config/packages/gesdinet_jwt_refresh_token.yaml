@@ -1,0 +1,7 @@
+gesdinet_jwt_refresh_token:
+  refresh_token_class: App\Entity\RefreshToken
+  ttl: 2592000
+  ttl_update: true
+  return_expiration: true
+  return_expiration_parameter_name: refresh_token_expiration
+#  logout_firewall:
