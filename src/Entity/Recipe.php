@@ -45,9 +45,9 @@ class Recipe
     #[ORM\Column]
     private bool $needUpdateTotalRecipeNutrient = true;
 
-//    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\OneToOne(targetEntity: TotalRecipeNutrient::class, orphanRemoval: true)]
     #[ORM\JoinColumn(name: "total_recipe_nutrient_id", referencedColumnName: "id", onDelete: "CASCADE")]
+    #[Groups(['recipe_detail'])]
     private ?TotalRecipeNutrient $totalRecipeNutrient = null;
 
     public function __construct()

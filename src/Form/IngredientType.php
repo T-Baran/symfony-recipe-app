@@ -19,34 +19,62 @@ class IngredientType extends AbstractType
     {
         $builder
             ->add('id', NumberType::class,[
-                'constraints'=>[]
+                'constraints'=>[],
+                'documentation'=>[
+                    'type'=>'integer',
+                    'description'=>'Provide Id if you want to modify resource'
+                ]
             ])
             ->add('name', TextType::class, [
-                'constraints' => []
+                'constraints' => [],
+                'documentation'=>[
+                    'type'=>'string',
+                    'description'=>'Provide name if you want to create resource'
+                ]
             ])
             ->add('calories', NumberType::class,[
                 'constraints'=> [
                     new PositiveOrZero()
+                ],
+                'documentation'=>[
+                    'type'=>'integer',
+                    'description'=>'Provide amount of calories in 100g of ingredient'
                 ]
             ])
             ->add('carbohydrates', NumberType::class,[
                 'constraints'=> [
                     new Range(['min'=>0, 'max'=>100]),
+                ],
+                'documentation'=>[
+                    'type'=>'integer',
+                    'description'=>'Provide carbohydrates in 100g of ingredient'
                 ]
                 ])
             ->add('fiber', NumberType::class,[
                 'constraints'=> [
                     new Range(['min'=>0, 'max'=>100])
+                ],
+                'documentation'=>[
+                    'type'=>'integer',
+                    'description'=>'Provide amount of fiber in 100g of ingredient'
                 ]
             ])
             ->add('protein', NumberType::class,[
                 'constraints'=> [
                     new Range(['min'=>0, 'max'=>100])
+                ],
+                'documentation'=>[
+                    'type'=>'integer',
+                    'description'=>'Provide amount of protein in 100g of ingredient'
                 ]
             ])
             ->add('fat', NumberType::class,[
                 'constraints'=>[
                     new Range(['min'=>0,'max'=>100])
+                ],
+                'documentation'=>[
+                    'type'=>'integer',
+                    'description'=>'Provide amount of fat in 100g of ingredient'
                 ]
             ]);
 

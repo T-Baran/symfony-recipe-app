@@ -4,13 +4,13 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-api_token_refresh:
+token_refresh:
     path: /api/token/refresh
 
-api_login:
+login_check:
     path: /api/login_check
 
-api_token_invalidate:
+token_invalidate:
     path: /api/token/invalidate
 
 app.swagger_ui:

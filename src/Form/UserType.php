@@ -20,21 +20,24 @@ class UserType extends AbstractType
             ->add('email', EmailType::class,[
                 'constraints'=>[
                     new UniqueEmail(),
+                ],
+                'documentation'=>[
+                    'type'=>'string',
+                    'description'=>'Provide Email'
                 ]
             ])
-            ->add('roles', ChoiceType::class, [
-                'multiple' => true,
-                'expanded' => true,
-                'choices' => [
-                    'user' => 'ROLE_USER',
-                    'editor' => 'ROLE_EDITOR',
-                    'admin' => 'ROLE_ADMIN',
-                    'superAdmin' => 'ROLE_SUPER_ADMIN',
-                ],
-                'error_bubbling' =>true
+            ->add('username', TextType::class,[
+                'documentation'=>[
+                    'type'=>'string',
+                    'description'=>'Provide username'
+                ]
             ])
-            ->add('username', TextType::class)
-            ->add('plainPassword', TextType::class);
+            ->add('plainPassword', TextType::class,[
+                'documentation'=>[
+                    'type'=>'string',
+                    'description'=>'Provide Password'
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

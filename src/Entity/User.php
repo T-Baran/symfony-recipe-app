@@ -10,6 +10,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use OpenApi\Attributes as OA;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'This email address is already in use')]
@@ -18,15 +20,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['recipe_detail', 'user'])]
+    #[Groups(['recipe_detail', 'user_detail'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['recipe_detail', 'user'])]
-    private ?string $email = null;
+    private ?string $email= null;
 
     #[ORM\Column]
-    #[Groups(['user'])]
+    #[Groups(['user_detail'])]
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(type: 'string')
+    )]
     private array $roles = [];
 
     #[ORM\Column]

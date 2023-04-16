@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TotalRecipeNutrientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TotalRecipeNutrientRepository::class)]
 class TotalRecipeNutrient
@@ -14,18 +15,23 @@ class TotalRecipeNutrient
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['recipe_detail'])]
     private ?int $calories = 0;
 
     #[ORM\Column]
+    #[Groups(['recipe_detail'])]
     private ?int $carbohydrates = 0;
 
     #[ORM\Column]
+    #[Groups(['recipe_detail'])]
     private ?int $fiber = 0;
 
     #[ORM\Column]
+    #[Groups(['recipe_detail'])]
     private ?int $protein = 0;
 
     #[ORM\Column]
+    #[Groups(['recipe_detail'])]
     private ?int $fat = 0;
 
     public function getId(): ?int
